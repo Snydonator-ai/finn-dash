@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.jsnyder.finndash'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.jsnyder.finndash"
+        minSdk 24           // Fire HD tablets from about 2017 onward
+        targetSdk 34
+        versionCode 5
+        versionName "0.5"
+    }
+
+    signingConfigs {
+        family {
+            storeFile file(FD_STORE_FILE)
+            storePassword FD_STORE_PASSWORD
+            keyAlias FD_KEY_ALIAS
+            keyPassword FD_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.family
+        }
+        debug {
+            signingConfig signingConfigs.family
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
