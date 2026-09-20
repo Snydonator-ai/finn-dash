@@ -70,7 +70,8 @@ input.code{letter-spacing:.12em;text-transform:uppercase;font-size:20px}
 .speed .d{color:var(--dim);font-size:15px}
 .err{color:#ffb3bf;min-height:22px;margin:8px 0}
 /* hub */
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+/* padding-right keeps the coin/best pills clear of the floating sound button */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding-right:58px}
 .pill{background:rgba(6,36,71,.7);border:2px solid rgba(120,200,255,.3);border-radius:999px;padding:6px 14px;font-size:18px;display:inline-flex;gap:6px;align-items:center;font-weight:600}
 .coin{display:inline-block;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6b0,#ffd23f 45%,#e09a00);box-shadow:0 0 6px rgba(255,210,63,.8);vertical-align:-3px}
 #hubFish{width:260px;height:150px;margin:6px auto}
@@ -99,12 +100,13 @@ input.code{letter-spacing:.12em;text-transform:uppercase;font-size:20px}
 /* game */
 #game{position:fixed;inset:0;display:none;background:#021024}
 #game.on{display:block}
-#cv{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);touch-action:none;border-radius:6px}
-#hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;padding:10px 12px;pointer-events:none;gap:8px}
+#cv{position:absolute;left:0;top:0;touch-action:none;border-radius:6px}
+#hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;gap:8px;
+  padding:calc(10px + var(--sat,0px)) calc(12px + var(--sar,0px)) 0 calc(12px + var(--sal,0px))}
 #hud .pill{pointer-events:none;font-size:20px}
 #hudL,#hudR{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-#pauseBtn{pointer-events:auto;font-size:18px;padding:6px 14px}
-#pups{position:absolute;left:12px;bottom:12px;display:flex;gap:8px;pointer-events:none}
+#pauseBtn{pointer-events:auto;font-size:18px;padding:6px 14px;min-width:52px;min-height:46px}
+#pups{position:absolute;left:calc(12px + var(--sal,0px));bottom:calc(12px + var(--sab,0px));display:flex;gap:8px;pointer-events:none}
 .pup{width:54px;height:54px;border-radius:50%;background:rgba(6,36,71,.75);border:3px solid rgba(255,255,255,.5);display:grid;place-items:center;font-size:26px;position:relative}
 .pup svg{position:absolute;inset:-3px}
 #zoneBanner{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%) scale(.9);text-align:center;opacity:0;transition:opacity .35s,transform .35s;pointer-events:none;white-space:nowrap}
@@ -127,10 +129,10 @@ input.code{letter-spacing:.12em;text-transform:uppercase;font-size:20px}
 .go-stats b{font-size:24px}
 .done-m{color:var(--kelp);font-weight:700;margin:4px 0}
 .codebox{font-size:28px;letter-spacing:.12em;font-weight:700;background:#062447;border-radius:14px;padding:12px;margin:10px 0;user-select:all;-webkit-user-select:all;word-break:break-all}
-.iconbtn{position:fixed;top:10px;right:12px;z-index:30;background:rgba(6,36,71,.7);border:2px solid rgba(255,255,255,.3);border-radius:12px;padding:5px 10px;font-size:20px}
+.iconbtn{position:fixed;top:calc(10px + var(--sat,0px));right:calc(12px + var(--sar,0px));z-index:30;background:rgba(6,36,71,.7);border:2px solid rgba(255,255,255,.3);border-radius:12px;padding:5px 10px;font-size:20px;min-width:46px;min-height:42px}
 body.ingame .iconbtn{display:none}
 body.ingame .bubbles-bg{display:none}
-#pulseBtn{position:absolute;right:14px;bottom:14px;width:88px;height:88px;border-radius:50%;background:rgba(6,36,71,.8);
+#pulseBtn{position:absolute;right:calc(14px + var(--sar,0px));bottom:calc(14px + var(--sab,0px));width:88px;height:88px;border-radius:50%;background:rgba(6,36,71,.8);
   border:3px solid rgba(255,255,255,.35);display:grid;place-items:center;pointer-events:auto;padding:0;opacity:.55}
 #pulseBtn.ready{opacity:1;border-color:#9beaff;box-shadow:0 0 18px rgba(155,234,255,.6)}
 #pulseBtn .ic{font-size:34px;line-height:1}
@@ -138,7 +140,7 @@ body.ingame .bubbles-bg{display:none}
 #pulseBtn small{position:absolute;bottom:-20px;left:0;right:0;text-align:center;color:var(--dim);font-size:12px}
 #pulseBtn svg{position:absolute;inset:-3px}
 body.touch #pulseBtn small{display:none}
-#bossHud{position:absolute;left:50%;top:8px;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;pointer-events:none;z-index:5}
+#bossHud{position:absolute;left:50%;top:calc(8px + var(--sat,0px));transform:translateX(-50%);display:none;flex-direction:column;align-items:center;pointer-events:none;z-index:5}
 #bossHud.on{display:flex}
 #bossName{font-size:22px;font-weight:700;text-shadow:0 2px 0 rgba(0,0,0,.6)}
 #bossRingWrap{position:relative;width:86px;height:86px;display:grid;place-items:center}
@@ -148,6 +150,58 @@ body.touch #pulseBtn small{display:none}
 .perk{color:var(--kelp);font-size:14px;font-weight:700;min-height:20px}
 .small-note{color:var(--dim);font-size:14px}
 @media (max-width:700px){.screen{padding-top:58px}}
+/* Little fingers need real targets: everything tappable is at least ~46px on touch screens. */
+body.touch .btn{min-height:48px}
+body.touch .btn.small{min-height:46px}
+body.touch .pcard .del{min-width:42px;min-height:42px;font-size:20px}
+body.touch .screen{padding-left:calc(16px + var(--sal,0px));padding-right:calc(16px + var(--sar,0px));
+  padding-top:calc(18px + var(--sat,0px));padding-bottom:calc(30px + var(--sab,0px))}
+/* Phone in landscape: short screen. Shrink the furniture, never the touch targets. */
+@media (max-height:560px) and (orientation:landscape){
+  .logo{font-size:clamp(32px,8vh,54px);margin:2px 0 2px}
+  .tag{font-size:15px;margin-bottom:8px}
+  h2{font-size:21px;margin:2px 0 8px} h3{font-size:17px}
+  .screen{padding:10px 14px 16px}
+  body.touch .screen{padding-top:calc(10px + var(--sat,0px));padding-bottom:calc(16px + var(--sab,0px))}
+  #titleFish{width:150px!important;height:75px!important}
+  #hubFish{width:170px;height:98px;margin:0 auto}
+  .btn{padding:11px 18px;font-size:17px;border-radius:14px}
+  .btn.big{font-size:25px;padding:13px 36px;border-radius:18px}
+  .btn.small{padding:9px 13px;font-size:15px}
+  .card{padding:12px;border-radius:16px}
+  .row{gap:9px}
+  #players{grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px}
+  .pcard canvas{width:52px;height:36px} .pcard .nm{font-size:19px} .pcard .meta{font-size:13px}
+  .speeds{grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+  .speed .ic{font-size:26px} .speed .t{font-size:18px} .speed .d{font-size:13px}
+  .hubgrid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:10px}
+  .mission .txt{font-size:14px} .stat{font-size:15px}
+  .shopgrid{grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px}
+  .item canvas{width:100px;height:60px} .item .ic{font-size:34px;line-height:60px;height:60px}
+  .item .nm{font-size:17px} .item .ds{font-size:13px;min-height:34px}
+  input[type=text]{padding:10px 12px;font-size:19px} input.code{font-size:17px}
+  .ov .card{max-height:96vh;padding:14px} .big-num{font-size:40px} .newbest{font-size:18px}
+  .go-stats{margin:8px 0} .go-stats b{font-size:20px} .codebox{font-size:21px;padding:10px;letter-spacing:.08em}
+  /* in-game furniture */
+  #hud{padding:calc(6px + var(--sat,0px)) calc(8px + var(--sar,0px)) 0 calc(8px + var(--sal,0px))}
+  #hud .pill{font-size:16px;padding:4px 10px}
+  #pauseBtn{font-size:16px;padding:6px 12px}
+  .pup{width:46px;height:46px;font-size:22px;border-width:2px}
+  #pups{gap:6px;left:calc(9px + var(--sal,0px));bottom:calc(9px + var(--sab,0px))}
+  #pulseBtn{width:70px;height:70px;right:calc(10px + var(--sar,0px));bottom:calc(10px + var(--sab,0px))}
+  #pulseBtn .ic{font-size:27px} #pulseBtn b{font-size:15px}
+  #bossRingWrap{width:64px;height:64px} #bossTime{font-size:26px} #bossName{font-size:17px} #bossSub{font-size:12px}
+  #zoneBanner .z{font-size:clamp(22px,7vh,42px)} #zoneBanner .s{font-size:15px}
+  #toast{font-size:18px;padding:7px 15px;bottom:14%} #startHint{font-size:18px;bottom:16%}
+}
+/* Held upright: ask for a turn rather than squeezing the ocean into a letterbox. */
+#rotate{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:linear-gradient(180deg,#0b5d9c,#062447);text-align:center;padding:24px}
+#rotate.on{display:flex}
+#rotate .ph{width:76px;height:128px;border:5px solid #bfe9ff;border-radius:14px;position:relative;animation:tilt 1.8s ease-in-out infinite}
+#rotate .ph:after{content:'';position:absolute;left:50%;bottom:7px;transform:translateX(-50%);width:26px;height:4px;border-radius:3px;background:#bfe9ff}
+#rotate .t{font-size:26px;font-weight:700} #rotate .s{font-size:17px;color:#cfeaff}
+@keyframes tilt{0%,40%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}
 </style>
 </head>
 <body>
@@ -268,6 +322,12 @@ body.touch #pulseBtn small{display:none}
 
 <button class="iconbtn" id="muteBtn" title="Sound">🔊</button>
 
+<div id="rotate">
+  <div class="ph"></div>
+  <div class="t">Turn me sideways!</div>
+  <div class="s">Finn swims better in landscape 🐟</div>
+</div>
+
 <!-- OVERLAYS -->
 <div class="ov" id="ov-over"><div class="card">
   <h2 id="goTitle">Splash!</h2>
@@ -311,7 +371,10 @@ body.touch #pulseBtn small{display:none}
 /* =================================================================
    FINN DASH — prototype v0.1
    ================================================================= */
-const W = 960, H = 540;
+// The view is 960x540 game units on a normal screen. On a tall phone screen the
+// width grows instead of showing black bars, so hazards come into view sooner.
+let W = 960;
+const H = 540, BASE_W = 960, MAX_W = 1240;
 const PX_PER_M = 40;
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -1537,7 +1600,10 @@ function update(dt) {
   const dx = R.pendingDrag[0], dy = R.pendingDrag[1]; R.pendingDrag = [0, 0];
   const da = R.vert ? dy : dx, dc = R.vert ? dx : dy;
   const ox = f.x, oy = f.y;
-  const across = R.vert ? 1.35 : 1, swim = FISH_SPEED * perkOf(R.p, 'swim', 1);
+  // Dive zones are as wide as the screen, so on a wide phone screen the fish must
+  // cover more ground sideways. Scale the sideways speed with it, or a wide screen
+  // would quietly be the harder screen. (Dragging is already proportional.)
+  const across = R.vert ? 1.35 * (R.A / BASE_W) : 1, swim = FISH_SPEED * perkOf(R.p, 'swim', 1);
   f.x += la * swim * dt + da; f.y += lc * swim * across * dt + dc;
   f.x = clamp(f.x, 40, R.bossOn ? W - 40 : R.L * (R.vert ? .6 : .72)); f.y = clamp(f.y, 18, R.A - 18);
   f.va = lerp(f.va, (f.x - ox) / Math.max(dt, .001), .25); f.vc = lerp(f.vc, (f.y - oy) / Math.max(dt, .001), .25);
@@ -2072,14 +2138,38 @@ function gfxSample(ms) {
   GFX.samples.length = 0; GFX.checked++;
   if (avg > 23 && !GFX.lite) { setLite(true); toast('⚙️ Switched to Lite graphics'); }
 }
+// Phones put the camera hole and gesture bar over the screen edges; keep the play
+// area clear of them. Read once per resize from a probe element, since env() can
+// only be used from CSS.
+const safeProbe = (() => {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;visibility:hidden;pointer-events:none;' +
+    'padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
+  document.body.appendChild(d);
+  return d;
+})();
+function safeInsets() {
+  const s = getComputedStyle(safeProbe);
+  const n = v => clamp(parseFloat(v) || 0, 0, 160);
+  return { t: n(s.paddingTop), r: n(s.paddingRight), b: n(s.paddingBottom), l: n(s.paddingLeft) };
+}
 function resize() {
-  const ww = window.innerWidth, wh = window.innerHeight;
-  SCALE = Math.min(ww / W, wh / H);
+  const ins = safeInsets(), root = document.documentElement.style;
+  root.setProperty('--sat', ins.t + 'px'); root.setProperty('--sar', ins.r + 'px');
+  root.setProperty('--sab', ins.b + 'px'); root.setProperty('--sal', ins.l + 'px');
+  const aw = Math.max(240, window.innerWidth - ins.l - ins.r);
+  const ah = Math.max(200, window.innerHeight - ins.t - ins.b);
+  W = clamp(Math.round(H * aw / ah), BASE_W, MAX_W);
+  SCALE = Math.min(aw / W, ah / H);
   const cap = GFX.lite ? 1 : (document.body.classList.contains('touch') ? 1.5 : 2);
   DPR = Math.min(cap, window.devicePixelRatio || 1);
   rayGrad = null; bgKey = '';
-  cv.style.width = Math.round(W * SCALE) + 'px'; cv.style.height = Math.round(H * SCALE) + 'px';
-  cv.width = Math.round(W * SCALE * DPR); cv.height = Math.round(H * SCALE * DPR);
+  const cw = Math.round(W * SCALE), ch = Math.round(H * SCALE);
+  cv.style.width = cw + 'px'; cv.style.height = ch + 'px';
+  cv.style.left = Math.round(ins.l + (aw - cw) / 2) + 'px';
+  cv.style.top = Math.round(ins.t + (ah - ch) / 2) + 'px';
+  cv.width = Math.round(cw * DPR); cv.height = Math.round(ch * DPR);
+  if (R) { R.L = R.vert ? H : W; R.A = R.vert ? W : H; }   // a rotate mid-run must not strand the fish
 }
 let bgGrad = null, bgKey = '', rayGrad = null;
 const SEABED = { reef: ['#f3dfa6', '#d9bf7a'], kelp: ['#1f6a58', '#164d40'], wreck: ['#3d5566', '#2a3d4a'], deep: ['#0f2248', '#0a1733'],
@@ -2334,7 +2424,8 @@ function render() {
   const lightPerk = perkOf(R.p, 'light', 0);
   const dark = Math.max(0, R.glow - .45) * 1.1 * (lightPerk ? .45 : 1);
   if (dark > 0 && !GFX.lite) {
-    const vg = c.createRadialGradient(fx, fy, lightPerk ? 230 : 140, fx, fy, 700);
+    const vr = 700 * (W / BASE_W);   // wider view => wider lit circle, so the darkness reads the same
+    const vg = c.createRadialGradient(fx, fy, (lightPerk ? 230 : 140) * (W / BASE_W), fx, fy, vr);
     vg.addColorStop(0, 'rgba(0,0,10,0)'); vg.addColorStop(1, `rgba(0,0,10,${.5 * dark})`);
     c.fillStyle = vg; c.fillRect(-20, -20, W + 40, H + 40);
   }
@@ -2640,6 +2731,7 @@ function startGame(opts) {
   closeOv();
   goFullscreen();
   show('game');
+  resize();                      // the view width depends on the screen, so fix it before the run is built
   $('#bossHud').classList.remove('on');
   newRun(opts);
   $('#hZone').textContent = R.zone.name;
@@ -2695,7 +2787,16 @@ gameEl.addEventListener('pointermove', e => {
   drag.x = e.clientX; drag.y = e.clientY;
 });
 ['pointerup', 'pointercancel'].forEach(t => gameEl.addEventListener(t, e => { if (drag && e.pointerId === drag.id) drag = null; }));
-window.addEventListener('resize', () => { if ($('#game').classList.contains('on')) resize(); });
+// Landscape only: if a phone is held upright, ask for a turn (and pause, so nobody
+// loses a run while the screen is sideways).
+function checkOrient() {
+  const on = isTouch() && window.innerHeight > window.innerWidth * 1.04;
+  $('#rotate').classList.toggle('on', on);
+  if (on && R && R.started && !R.paused && $('#game').classList.contains('on')) pause();
+}
+function relayout() { checkOrient(); if ($('#game').classList.contains('on')) resize(); }
+window.addEventListener('resize', relayout);
+window.addEventListener('orientationchange', () => setTimeout(relayout, 140));
 
 /* =================================================================
    BOOT
@@ -2727,9 +2828,11 @@ applyGfxMode(SAVE.gfx || 'auto');
 bubblesBg();
 fishPreview($('#titleFish'), 'finn', 'none', true);
 if (P()) renderHub(); else renderTitle();
+resize();       // fills in the --sa* safe-area vars before anything is shown
+checkOrient();
 requestAnimationFrame(frame);
 
-window.__fd = { get R() { return R; }, set R(v) { R = v; }, update, render, startGame, P, SAVE, save, makeCode, readCode, newPlayer, fixPlayer, renderHub, renderShop, switchZone, obsShapes, hitShape, toScreen, zoneStart, LAP_PX, NZ, ZONES, PX_PER_M, missionOf, firePulse, startBoss, BOSS_SEC, hzShapes, hitHz, bossUpdate, hudPups, activate, applyGfxMode, GFX };
+window.__fd = { get R() { return R; }, set R(v) { R = v; }, get W() { return W; }, H, get SCALE() { return SCALE; }, resize, update, render, startGame, P, SAVE, save, makeCode, readCode, newPlayer, fixPlayer, renderHub, renderShop, switchZone, obsShapes, hitShape, toScreen, zoneStart, LAP_PX, NZ, ZONES, PX_PER_M, missionOf, firePulse, startBoss, BOSS_SEC, hzShapes, hitHz, bossUpdate, hudPups, activate, applyGfxMode, GFX };
 
 </script>
 </body>

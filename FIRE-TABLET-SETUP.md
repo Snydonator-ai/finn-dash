@@ -1,7 +1,9 @@
-# Putting Finn Dash on the Fire tablets
+# Putting Finn Dash on the Fire tablets (and Android phones)
 
 Two parts: build the app once on GitHub's free servers (about 10 minutes, nothing installed on your
 PC), then install it on each tablet (about 2 minutes each).
+
+The same app file works on Android phones — see **Phones** near the bottom.
 
 ---
 
@@ -36,6 +38,11 @@ it lives in a hidden folder that Windows and browsers like to skip.)
 - Open `workflow-build-apk.yml` from the Kids Game folder in Notepad, copy everything, and paste it
   into the big text box
 - Click **Commit changes**
+
+> **Already did this once?** If I send you a new `workflow-build-apk.yml`, don't create the file
+> again — open the existing one on GitHub (**.github → workflows → build-apk.yml**), click the
+> **pencil** icon, select everything in the box (Ctrl+A), paste the new contents over it, and commit.
+> Saving it starts a fresh build straight away.
 
 **4. Wait for the build.**
 - Click the **Actions** tab. A job called *Build Finn Dash APK* starts as soon as step 3b is saved.
@@ -80,15 +87,25 @@ button pauses the game (press it twice to leave).
   network.
 - **Each tablet keeps its own players.** Progress lives on the tablet. To move a player between
   tablets, use the **Backup Code** button in the menu and type the code on the other tablet.
-- **Updates.** When I send a new version of the game, replace `app/src/main/assets/finn-dash.html`
-  in the repository (open that file on GitHub → pencil icon is for text; for a full replace, use
-  **Add file → Upload files** and drop the new `finn-dash.html` into the same folder), then commit.
-  GitHub rebuilds within minutes, and installing it on the tablet goes over the top — players, coins
-  and cosmetics are all kept.
+- **Updates.** When I send a new version, open `Kids Game\finn-dash-android` on your PC, select
+  everything inside it, and drag it onto the repository's **Add file → Upload files** page exactly
+  like the first upload. Matching files are replaced, everything else is left alone, and the version
+  number takes care of itself. GitHub rebuilds within minutes; installing on the tablet goes over the
+  top, so players, coins and cosmetics are all kept.
 - **Older tablets.** The app needs a Fire tablet from roughly 2017 or newer (Fire OS 6+). Anything
   older has a browser engine too old for the game.
 - **Graphics.** If a tablet struggles, the game notices and switches itself to Lite graphics. You can
   also set it by hand: pause → **Graphics** button (Auto / Full / Lite).
+
+## Phones
+
+The same `finn-dash.apk` installs on any Android phone from about 2017 onward — there's nothing
+different to build. On the phone: **Settings → Apps → Special app access → Install unknown apps**,
+allow it for Chrome (wording varies by maker), then open the release link and tap the file.
+
+The game knows it's on a phone: it uses the full width of the screen (so hazards come into view
+sooner rather than sitting behind black bars), keeps its buttons finger-sized, stays clear of the
+camera cutout, and shows a "turn me sideways" screen — and pauses — if the phone is held upright.
 
 ## If something goes wrong
 

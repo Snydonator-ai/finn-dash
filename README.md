@@ -14,10 +14,17 @@ project in the Kids Game folder.
 
 ## Updating the game later
 
-Replace `app/src/main/assets/finn-dash.html` with a newer copy of the game and push. Bump
-`versionCode` (and `versionName`) in `app/build.gradle` if you want the tablet to treat it as a newer
-version. Installs always go over the top of the previous one because every build is signed with
-`app/finndash-key.jks`, so saved players and coins survive an update.
+Replace `app/src/main/assets/finn-dash.html` with a newer copy of the game and push. `versionCode` is
+derived from the GitHub build number, so every cloud build is automatically newer than the last and
+no file needs editing by hand. Installs always go over the top of the previous one because every
+build is signed with `app/finndash-key.jks`, so saved players and coins survive an update.
+
+## Phones as well as tablets
+
+The activity draws into the display cutout (`LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES`) and the game
+reads the cutout size through CSS `env(safe-area-inset-*)`, so the play field stays clear of the
+camera hole while still using the whole screen. Orientation is `sensorLandscape`; held upright, the
+game shows a rotate prompt and pauses itself.
 
 ## Files worth knowing
 
