@@ -232,6 +232,17 @@ body.touch .screen{padding-left:calc(16px + var(--sal,0px));padding-right:calc(1
 #bossIntro .bi-sub{font-size:18px;color:#ffc7cf;letter-spacing:.16em;text-transform:uppercase;margin-top:2px}
 #bossHud.rage #bossBar{border-color:#ff4d6a;box-shadow:0 0 14px rgba(255,60,80,.7)}
 #bossHud.rage #bossName{color:#ffb3bf}
+/* portrait phones: one tidy row of HUD, boss bar tucked under it, toasts that wrap */
+body.portrait #hZone{display:none}
+body.portrait #hudL,body.portrait #hudR{flex-wrap:nowrap}
+body.portrait #bossHud{top:calc(62px + var(--sat,0px));transform:translateX(-50%) scale(.86);transform-origin:top center}
+body.portrait #toast{white-space:normal;max-width:90vw;text-align:center;width:max-content;font-size:18px;bottom:20%}
+body.portrait #startHint{bottom:30%}
+body.portrait .shopgrid{grid-template-columns:1fr 1fr;gap:8px}
+body.portrait .shopgrid.stack{display:block}
+body.portrait .item{padding:10px 8px}
+body.portrait .item .ds{min-height:0}
+body.portrait .item.clam{grid-column:1/-1}
 @media (max-height:560px) and (orientation:landscape){
   #bossIntro .bi-ic{font-size:46px} #bossIntro .bi-name{font-size:32px} #bossIntro .bi-sub{font-size:14px}
 }
@@ -432,8 +443,16 @@ body.touch .screen{padding-left:calc(16px + var(--sal,0px));padding-right:calc(1
    ================================================================= */
 // The view is 960x540 game units on a normal screen. On a tall phone screen the
 // width grows instead of showing black bars, so hazards come into view sooner.
-let W = 960;
-const H = 540, BASE_W = 960, MAX_W = 1240;
+let W = 960, H = 540;
+const BASE_W = 960, MAX_W = 1240;
+// Portrait (a phone held upright): the view is 540 wide and as tall as the screen allows.
+const PORT_W = 540, PORT_H_MIN = 780, PORT_H_MAX = 1240;
+let PORTRAIT = false;
+// bosses are drawn smaller in a portrait arena, which is only 540 wide
+const BS = () => PORTRAIT ? .6 : 1;
+// the Fire Crab stands a little taller in a portrait arena so it isn't hidden behind the buttons
+const CRAB_S = () => PORTRAIT ? .8 : 1, CRAB_BY = () => PORTRAIT ? H - 20 : H + 78;
+const KRAKEN_CREVICE_Y = () => PORTRAIT ? 200 : 96;   // clear of the HUD on a tall screen
 const PX_PER_M = 40;
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -512,7 +531,8 @@ function wallFrac(wx) {
   }
   return fr;
 }
-const wallW = wx => Math.round(W * wallFrac(wx));          // one side, in px, for a diving level
+// in portrait the screen is already narrow, so the walls take a smaller share of it
+const wallW = wx => Math.round(W * wallFrac(wx) * (PORTRAIT ? .5 : 1));
 const wallAt = wx => R && R.vert ? wallW(wx) : 0;          // 0 in the boss arenas
 const laneA = wx => R.A - 2 * wallAt(wx);                    // open water between the walls
 const BOSS_IN = 0;                        // the boss is waiting the moment you arrive
@@ -2079,7 +2099,7 @@ function drawVent(c, x, o, t, A) {
 function drawKraken(c, t, B) {
   // a crevice up in the far corner, where its eye sometimes peeks out instead
   c.save();
-  const cx = W - 120, cy = 96;
+  const cx = W - 120, cy = KRAKEN_CREVICE_Y();
   c.fillStyle = '#06030c';
   c.beginPath(); c.ellipse(cx, cy, 70, 44, -.2, 0, 7); c.fill();
   c.strokeStyle = '#3a1a5e'; c.lineWidth = 14; c.lineCap = 'round';
@@ -2127,7 +2147,7 @@ function drawKraken(c, t, B) {
 function drawMeg(c, t, B) {
   // drawn nose-right, then mirrored to face whichever way he is going
   c.save();
-  c.translate(B.mx, B.my); c.scale(B.face || -1, 1);
+  c.translate(B.mx, B.my); c.scale((B.face || -1) * BS(), BS());
   const grin = B.mstate === 'grin' || B.mstate === 'bite';
   const close = grin ? .88 : B.weakOpen ? .72 : .5;          // he comes in closer to bite
   const tilt = Math.sin(t * .5) * .06 + (B.mstate === 'bite' ? .08 : 0);
@@ -2168,7 +2188,7 @@ function drawCrab(c, t, B) {
   // The Fire Crab: cooled obsidian shell with magma glowing through every crack,
   // standing in a pool of lava at the bottom of the arena.
   c.save();
-  const bx = W * .45, by = H + 78, sway = Math.sin(t * 1.2) * 12;
+  const bx = W * .45, by = CRAB_BY(), sway = Math.sin(t * 1.2) * 12;
   const pulse = .6 + .4 * Math.sin(t * 2.2);
   // --- lava pool he is standing in ---
   const pool = memoGrad(c, 'crabPool', () => {
@@ -2193,6 +2213,7 @@ function drawCrab(c, t, B) {
     c.beginPath(); c.arc(ex, H - 30 - pp * 220, 2 + (1 - pp) * 3, 0, 7); c.fill();
   }
   c.globalAlpha = 1;
+  c.save(); c.translate(bx, by); c.scale(CRAB_S(), CRAB_S()); c.translate(-bx, -by);   // the crab itself (the pool stays full width)
   // --- legs, jointed and glowing at the joints ---
   c.strokeStyle = '#3a1410'; c.lineWidth = 17; c.lineCap = 'round'; c.lineJoin = 'round';
   for (let i = -3; i <= 3; i++) {
@@ -2270,6 +2291,7 @@ function drawCrab(c, t, B) {
     c.beginPath(); c.arc(bx + Math.sin(t * 2 + i) * 26, by - 230 - pp * 130, 5 + pp * 6, 0, 7); c.fill();
   }
   c.globalAlpha = 1;
+  c.restore();                              // the crab's scale
   c.restore();
 }
 // one claw, drawn open or closing
@@ -2306,7 +2328,7 @@ function drawFireClaw(c, x, y, dir, rot, close, t, pulse) {
 }
 const LANTERN_VANISH = .9;
 function lanternBody(t) { return [W * .78 + Math.sin(t * .5) * 26, H * .42 + Math.sin(t * .8) * 30]; }
-function lureIdle(B, t) { const [bx, by] = lanternBody(t); return [bx - 150 + Math.sin(t * .9) * 40, by - 150 + Math.cos(t * .7) * 30]; }
+function lureIdle(B, t) { const [bx, by] = lanternBody(t), k = BS(); return [bx + (-150 + Math.sin(t * .9) * 40) * k, by + (-150 + Math.cos(t * .7) * 30) * k]; }
 // where the lantern is: idling, or swinging out to the spot while the fish fades away
 function lurePos(B, t) {
   const idle = lureIdle(B, t);
@@ -2322,6 +2344,7 @@ function drawLantern(c, t, B) {
   const hide = B.hide || 0;
   if (hide > .99) { c.restore(); return; }
   c.globalAlpha = 1 - hide;
+  if (PORTRAIT) { c.translate(bx, by); c.scale(BS(), BS()); c.translate(-bx, -by); }
   // body
   const g = memoGrad(c, 'lanternBody', () => { const gg = c.createRadialGradient(-40, -30, 12, 0, 0, 240); gg.addColorStop(0, '#2b3350'); gg.addColorStop(1, '#070b16'); return gg; });
   c.fillStyle = g; c.shadowColor = '#ffd23f'; c.shadowBlur = 26 * lit;
@@ -2353,9 +2376,11 @@ function drawLantern(c, t, B) {
   c.fillStyle = '#10213a'; c.beginPath(); c.arc(bx - 55, by - 33, 6, 0, 7); c.fill();
   // the lure: a stalk from the head toward wherever the lantern is hanging
   const [lx, ly] = lurePos(B, t);
+  if (PORTRAIT) { c.translate(bx, by); c.scale(1 / BS(), 1 / BS()); c.translate(-bx, -by); }   // the lure lives in screen space
+  const k = BS(), sx0 = bx - 70 * k, sy0 = by - 60 * k;
   c.strokeStyle = 'rgba(190,210,240,.55)'; c.lineWidth = 4; c.lineCap = 'round';
-  c.beginPath(); c.moveTo(bx - 70, by - 60);
-  c.quadraticCurveTo((bx - 70 + lx) / 2, Math.min(by - 120, ly - 60), lx, ly);
+  c.beginPath(); c.moveTo(sx0, sy0);
+  c.quadraticCurveTo((sx0 + lx) / 2, Math.min(by - 120 * k, ly - 60), lx, ly);
   c.stroke();
   if (!B.weakOpen || B.vanish > 0) {
     // the lantern glows while it hangs there (and while it swings out to its spot)
@@ -2372,7 +2397,7 @@ function drawLantern(c, t, B) {
 let darkCv = null;
 function drawDarkness(c, depth, rgb, holes, blotch) {
   const pw = Math.ceil(W / 2), ph = Math.ceil(H / 2);        // half resolution: it is all soft edges
-  if (!darkCv || darkCv.width !== pw) { darkCv = document.createElement('canvas'); darkCv.width = pw; darkCv.height = ph; }
+  if (!darkCv || darkCv.width !== pw || darkCv.height !== ph) { darkCv = document.createElement('canvas'); darkCv.width = pw; darkCv.height = ph; }
   const d = darkCv.getContext('2d');
   d.setTransform(1, 0, 0, 1, 0, 0);
   d.globalCompositeOperation = 'source-over';
@@ -2645,7 +2670,7 @@ function drawHazard(c, h, t, type) {
     const a = h.t - h.tele;
     const reach = tele ? Math.min(1, h.t / Math.max(h.tele, .01)) : 1;
     const close = a < .22 ? 0 : a < .5 ? (a - .22) / .28 : a < .66 ? 1 : Math.max(0, 1 - (a - .66) / .2);
-    const bx = W * .45 + h.side * 210, by = H + 40;             // the shoulder it swings from
+    const bx = W * .45 + h.side * 210 * CRAB_S(), by = CRAB_BY() - 38 * CRAB_S();             // the shoulder it swings from
     const cx = lerp(bx, h.x, reach), cy = lerp(by, h.y, reach);
     // the arm
     c.strokeStyle = '#3a1410'; c.lineWidth = 15; c.lineCap = 'round';
@@ -2822,7 +2847,7 @@ function newRun(opts) {
     p, sp: SPEEDS[p.speed] || SPEEDS.normal, skin: SKINS.find(s => s.id === p.skin) || SKINS[0],
     t: 0, started: false, dying: false, dieT: 0, over: false, paused: false, practice: !!opts.practice,
     cam: zoneStart(startZone) + (opts.practice ? BOSS_IN - 10 * PX_PER_M : 0), zoneIdx: startZone, zone: z, vert: !!z.vert, L: z.vert ? H : W, A: z.vert ? W : H,
-    fish: { x: z.vert ? 130 : 170, y: (z.vert ? W : H) / 2, va: 0, vc: 0 }, trail: [],
+    fish: { x: z.vert ? (PORTRAIT ? 210 : 130) : 170, y: (z.vert ? W : H) / 2, va: 0, vc: 0 }, trail: [],
     obs: [], coins: [], pups: [], parts: [], fx: [], floats: [],
     nextX: zoneStart(startZone) + (opts.practice ? BOSS_IN / PX_PER_M + 5 : startZone ? 40 : 52) * PX_PER_M, nextPupAt: zoneStart(startZone) + (startZone ? 50 : 95) * PX_PER_M,
     act: { shield: p.up.startShield ? 1 : 0, magnet: 0, turbo: 0, mini: 0, frenzy: 0 }, actMax: {},
@@ -3791,10 +3816,10 @@ function openWeak() {
     // it peeks out of one of two hiding places, and not always the one you expect
     B.eyeSpot = Math.random() < .5 ? 0 : 1;
     if (B.eyeSpot === 0) { B.wx = 116; B.wy = H - 32; }       // its body, down in the corner
-    else { B.wx = W - 120; B.wy = 96; }                      // a crevice up in the far corner
+    else { B.wx = W - 120; B.wy = KRAKEN_CREVICE_Y(); }                      // a crevice up in the far corner
   }
-  else if (B.type === 'crab') { B.wx = W * .45 + Math.sin(R.t * 1.2) * 10; B.wy = H - 150; }  // the crack in its shell
-  else if (B.type === 'meg') { B.wx = B.mx - B.face * 66; B.wy = B.my - 6; }   // his gills, wherever he is
+  else if (B.type === 'crab') { B.wx = W * .45 + Math.sin(R.t * 1.2) * 10; B.wy = CRAB_BY() - 228 * CRAB_S(); }  // the crack in its shell
+  else if (B.type === 'meg') { B.wx = B.mx - B.face * 66 * BS(); B.wy = B.my - 6 * BS(); }   // his gills, wherever he is
   else if (B.type === 'lantern') {
     // it swings its lantern somewhere, then fades into the dark. A moment later the
     // lights come on: the real one where the lantern was, and fakes that look identical.
@@ -3849,7 +3874,7 @@ function bossAnchor(B) {
   if (B.type === 'meg') return [B.mx, B.my];
   if (B.type === 'kraken') return [110, H - 50];
   if (B.type === 'lantern') return [W * .78 + Math.sin(R.t * .5) * 26, H * .42 + Math.sin(R.t * .8) * 30];
-  return [W * .45, H - 120];
+  return [W * .45, CRAB_BY() - 198 * CRAB_S()];
 }
 function damageBoss(n) {
   const B = R.boss;
@@ -3925,7 +3950,7 @@ function bossAttack() {
     for (let i = 0; i < n; i++) {
       const x = rand(i * slot + 50, (i + 1) * slot - 20);
       const tl = tele + i * .18;
-      B.hz.push({ k: 'debris', x, y: -30, vx: 0, vy: 320 + B.lap * 35, r: 21, tele: tl, life: tl + 3, t: 0, delay: 0, seed: rand(0, 6) });
+      B.hz.push({ k: 'debris', x, y: -30, vx: 0, vy: 320 + B.lap * 35, r: 21, tele: tl, life: tl + (H + 90) / (320 + B.lap * 35), t: 0, delay: 0, seed: rand(0, 6) });
     }
   } else if (k === 'pincer') {
     const gapH = ({ chill: 205, normal: 180, fast: 158 }[R.p.speed] || 180) - B.lap * 8;
@@ -3958,7 +3983,7 @@ function bossAttack() {
     const slot = W / n;
     for (let i = 0; i < n; i++) {
       const tl = tele + i * .2;
-      B.hz.push({ k: 'debris', x: rand(i * slot + 50, (i + 1) * slot - 20), y: -30, vx: 0, vy: 310 + B.lap * 35, r: 22, tele: tl, life: tl + 3, t: 0, delay: 0, seed: rand(0, 6), style: 'lava' });
+      B.hz.push({ k: 'debris', x: rand(i * slot + 50, (i + 1) * slot - 20), y: -30, vx: 0, vy: 310 + B.lap * 35, r: 22, tele: tl, life: tl + (H + 90) / (310 + B.lap * 35), t: 0, delay: 0, seed: rand(0, 6), style: 'lava' });
     }
   } else if (k === 'chomp') {
     // a claw comes out on its arm, hangs open over Finn, then snaps shut
@@ -3978,8 +4003,10 @@ function bossAttack() {
     B.hz.push({ k: 'charge', y: y2, dir: -1, x: W + 140, tele: tele + .55, life: tele + .55 + run, t: 0, sp: 900 + B.lap * 120 });
   } else if (k === 'slamPair') {
     // two tentacles erupt at once, always leaving a lane between them
-    const x1 = clamp(f.x + rand(-60, 60), 90, W - 90);
-    const x2 = clamp(x1 + (x1 < W / 2 ? 1 : -1) * rand(250, 330), 90, W - 90);
+    let x1 = clamp(f.x + rand(-60, 60), 90, W - 90);
+    const dir = x1 < W / 2 ? 1 : -1, need = 116 + (PORTRAIT ? 160 : 200);   // tentacle width + a lane to swim in
+    let x2 = x1 + dir * Math.max(need, rand(250, 330));
+    if (x2 < 90 || x2 > W - 90) { x2 = clamp(x2, 90, W - 90); x1 = x2 - dir * need; }
     for (const x of [x1, x2]) B.hz.push({ k: 'band', x: x - 58, y: -10, w: 116, h: H + 20, tele, life: tele + .6, t: 0, style: 'tentacle', vertical: true, grow: .2, from: 'bottom' });
   } else if (k === 'doubleChomp') {
     // both claws: one where Finn is, one where he is likely to dodge to
@@ -4076,9 +4103,10 @@ function megUpdate(B, dt) {
     B.my += B.mvy * dt;
     if (B.my < 130) { B.my = 130; B.mvy = Math.abs(B.mvy); }
     if (B.my > H - 130) { B.my = H - 130; B.mvy = -Math.abs(B.mvy); }
-    const atEdge = (B.mdir < 0 && B.mx <= 200) || (B.mdir > 0 && B.mx >= W - 200);
+    const edge = 200 * BS();
+    const atEdge = (B.mdir < 0 && B.mx <= edge) || (B.mdir > 0 && B.mx >= W - edge);
     if (atEdge) {
-      B.mx = clamp(B.mx, 200, W - 200);
+      B.mx = clamp(B.mx, edge, W - edge);
       if (B.weakOpen || B.dead) B.mdir *= -1;             // gills open: just turn round, no bite
       else { B.mstate = 'turn'; B.mt = .45; }
     }
@@ -4098,13 +4126,13 @@ function megUpdate(B, dt) {
   } else if (B.mstate === 'bite') {
     // lunge so his jaws arrive at the bite
     const k = clamp(1 - B.mt / .28, 0, 1);
-    B.mx = clamp(lerp(B.lx0, B.biteX - B.face * 205, k), 150, W - 150);
+    B.mx = clamp(lerp(B.lx0, B.biteX - B.face * 205 * BS(), k), 150 * BS(), W - 150 * BS());
     B.my = clamp(lerp(B.ly0, B.biteY + 18, k), 110, H - 110);
     if (B.mt <= 0) { B.mstate = 'recover'; B.mt = .45; }
   } else if (B.mstate === 'recover') {
     if (B.mt <= 0) { B.mstate = 'swim'; B.mdir = B.mx < W / 2 ? 1 : -1; }   // back the other way
   }
-  if (B.weakOpen) { B.wx = B.mx - B.face * 66; B.wy = B.my - 6; }   // the gills, just behind the head
+  if (B.weakOpen) { B.wx = B.mx - B.face * 66 * BS(); B.wy = B.my - 6 * BS(); }   // the gills, just behind the head
 }
 function bossUpdate(dt) {
   const B = R.boss, f = R.fish;
@@ -4245,8 +4273,13 @@ function resize() {
   root.setProperty('--sab', ins.b + 'px'); root.setProperty('--sal', ins.l + 'px');
   const aw = Math.max(240, window.innerWidth - ins.l - ins.r);
   const ah = Math.max(200, window.innerHeight - ins.t - ins.b);
-  W = clamp(Math.round(H * aw / ah), BASE_W, MAX_W);
+  const wasP = PORTRAIT;
+  PORTRAIT = ah > aw * 1.05;
+  if (PORTRAIT) { W = PORT_W; H = clamp(Math.round(PORT_W * ah / aw), PORT_H_MIN, PORT_H_MAX); }
+  else { H = 540; W = clamp(Math.round(H * aw / ah), BASE_W, MAX_W); }
   SCALE = Math.min(aw / W, ah / H);
+  document.body.classList.toggle('portrait', PORTRAIT);
+  gradMemo.clear();                          // some cached gradients are laid out in screen space
   const cap = GFX.lite ? 1 : (document.body.classList.contains('touch') ? 1.5 : 2);
   DPR = Math.min(cap, window.devicePixelRatio || 1);
   rayGrad = null; bgKey = '';
@@ -4255,7 +4288,24 @@ function resize() {
   cv.style.left = Math.round(ins.l + (aw - cw) / 2) + 'px';
   cv.style.top = Math.round(ins.t + (ah - ch) / 2) + 'px';
   cv.width = Math.round(cw * DPR); cv.height = Math.round(ch * DPR);
+  const oldAcross = R ? (R.bossOn ? null : R.A) : null;
   if (R) { R.L = R.vert ? H : W; R.A = R.vert ? W : H; }   // a rotate mid-run must not strand the fish
+  if (wasP !== PORTRAIT && R && !R.over) portraitSwitch(oldAcross);
+}
+// The phone turned mid-run: the screen changed shape under everything. Keep Finn on screen,
+// drop anything that was laid out for the old shape, and pause so nobody gets hit while turning.
+function portraitSwitch(oldAcross) {
+  const f = R.fish;
+  if (oldAcross && !R.bossOn) f.y *= R.A / oldAcross;          // same spot across the dive, as a share of its width
+  f.x = clamp(f.x, 30, (R.bossOn ? W : R.L) - 30); f.y = clamp(f.y, 18, (R.bossOn ? H : R.A) - 18);
+  R.torps = []; R.mouseT = null; R.pendingDrag = [0, 0];
+  const B = R.boss;
+  if (B) {
+    B.hz.length = 0; B.weakOpen = false; B.weakT = 0; B.decoys = []; B.inkT = 0; B.next = Math.max(B.next, 1.2);
+    if (B.mx != null) { B.mx = clamp(B.mx, 60, W - 60); B.my = clamp(B.my, 80, H - 80); }
+  }
+  R.parts.forEach(p => Object.assign(p, bgParticle(true)));
+  if (R.started && !R.paused && !R.dying) pause();
 }
 /* =================================================================
    PARALLAX SCENERY
@@ -5421,8 +5471,7 @@ function startGame(opts) {
   $('#hZone').textContent = R.zone.name;
   const sh = $('#startHint');
   sh.style.display = 'block';
-  const portrait = isTouch() && window.innerHeight > window.innerWidth;
-  sh.innerHTML = (isTouch() ? '👆 Drag anywhere to swim!<br><small>Tap 💥 for a Sonic Pulse</small>' : '⌨️ Use the arrow keys (or drag) to swim!<br><small>Press SPACE for a Sonic Pulse</small>') + (portrait ? '<br><small>Tip: turn your phone sideways</small>' : '');
+  sh.innerHTML = isTouch() ? '👆 Drag anywhere to swim!<br><small>Tap 💥 for a Sonic Pulse</small>' : '⌨️ Use the arrow keys (or drag) to swim!<br><small>Press SPACE for a Sonic Pulse</small>';
   zoneBanner(R.zone.name, R.practice ? 'Boss practice — good luck!' : 'Dodge the obstacles, grab the coins!');
   hudTick();
   musicSync();                       // now that the run exists, play its area's theme
@@ -5507,7 +5556,7 @@ function setMouseTarget(e) {
 // Landscape only: if a phone is held upright, ask for a turn (and pause, so nobody
 // loses a run while the screen is sideways).
 function checkOrient() {
-  const on = isTouch() && window.innerHeight > window.innerWidth * 1.04;
+  const on = false;                    // portrait is supported now, so no need to ask for a turn
   $('#rotate').classList.toggle('on', on);
   if (on && R && R.started && !R.paused && $('#game').classList.contains('on')) pause();
 }
@@ -5556,7 +5605,7 @@ resize();       // fills in the --sa* safe-area vars before anything is shown
 checkOrient();
 requestAnimationFrame(frame);
 
-window.__fd = { laneA: x => laneA(x), wallAt: x => wallAt(x), scrollSpeed: () => scrollSpeed(), music: { MUS, THEMES, playStep, bossArrangement, resetNoise: () => { noiseBuf = null; } }, get R() { return R; }, set R(v) { R = v; }, get W() { return W; }, H, get SCALE() { return SCALE; }, resize, update, render, startGame, P, SAVE, save, makeCode, readCode, newPlayer, fixPlayer, renderHub, renderShop, switchZone, obsShapes, hitShape, toScreen, zoneStart, LAP_PX, NZ, ZONES, PX_PER_M, missionOf, firePulse, startBoss, BOSS_SEC, hzShapes, hitHz, bossUpdate, hudPups, activate, applyGfxMode, GFX };
+window.__fd = { laneA: x => laneA(x), wallAt: x => wallAt(x), scrollSpeed: () => scrollSpeed(), music: { MUS, THEMES, playStep, bossArrangement, resetNoise: () => { noiseBuf = null; } }, get R() { return R; }, set R(v) { R = v; }, get W() { return W; }, get H() { return H; }, get PORTRAIT() { return PORTRAIT; }, get SCALE() { return SCALE; }, resize, update, render, startGame, P, SAVE, save, makeCode, readCode, newPlayer, fixPlayer, renderHub, renderShop, switchZone, obsShapes, hitShape, toScreen, zoneStart, LAP_PX, NZ, ZONES, PX_PER_M, missionOf, firePulse, startBoss, BOSS_SEC, hzShapes, hitHz, bossUpdate, hudPups, activate, applyGfxMode, GFX };
 
 </script>
 </body>
