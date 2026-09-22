@@ -238,6 +238,8 @@ body.portrait #hudL,body.portrait #hudR{flex-wrap:nowrap}
 body.portrait #bossHud{top:calc(62px + var(--sat,0px));transform:translateX(-50%) scale(.86);transform-origin:top center}
 body.portrait #toast{white-space:normal;max-width:90vw;text-align:center;width:max-content;font-size:18px;bottom:20%}
 body.portrait #startHint{bottom:30%}
+/* tablets and the web (diving down): power-ups sit up top under the score, keeping the bottom clear */
+body:not(.portrait) #pups{top:calc(62px + var(--sat,0px));bottom:auto}
 body.portrait .shopgrid{grid-template-columns:1fr 1fr;gap:8px}
 body.portrait .shopgrid.stack{display:block}
 body.portrait .item{padding:10px 8px}
@@ -450,9 +452,13 @@ const PORT_W = 540, PORT_H_MIN = 780, PORT_H_MAX = 1240;
 let PORTRAIT = false;
 // bosses are drawn smaller in a portrait arena, which is only 540 wide
 const BS = () => PORTRAIT ? .6 : 1;
+// Phones held upright swim UP: Finn sits low, near the thumb, and danger comes from the top where
+// nothing covers it. The game logic is unchanged; the dive is simply drawn (and steered) upside down.
+const FLIP = () => PORTRAIT && !!R && !!R.vert;
 // the Fire Crab stands a little taller in a portrait arena so it isn't hidden behind the buttons
 const CRAB_S = () => PORTRAIT ? .8 : 1, CRAB_BY = () => PORTRAIT ? H - 20 : H + 78;
 const KRAKEN_CREVICE_Y = () => PORTRAIT ? 200 : 96;   // clear of the HUD on a tall screen
+const KRAKEN_UP = () => PORTRAIT ? 110 : 0;             // its body sits higher, clear of the buttons along the bottom
 const PX_PER_M = 40;
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -1703,7 +1709,7 @@ function drawMerman(c, x, y, t, glow, o) {
   c.strokeStyle = 'rgba(150,90,50,.35)'; c.lineWidth = 1.4;
   c.beginPath(); c.moveTo(-5, -14); c.quadraticCurveTo(0, -11, 6, -14); c.stroke();
   // --- throwing arm, curved, back during the wind-up ---
-  const rest = R && R.vert ? -1.2 : -.28;                 // diving: trident held up toward Finn
+  const rest = R && R.vert ? (FLIP() ? .9 : -1.2) : -.28;  // diving: trident held toward Finn (below him when swimming up)
   const armA = wind > 0 ? -2.45 + (1 - wind / .38) * .45 : rest;
   c.save(); c.translate(-1, -13); c.rotate(armA);
   c.strokeStyle = '#eab887'; c.lineWidth = 5.6; c.lineCap = 'round'; c.lineJoin = 'round';
@@ -2122,7 +2128,7 @@ function drawKraken(c, t, B) {
   // a big shadowy body in the corner with waving tentacles
   c.save();
   c.globalAlpha = .82;
-  const bx = 70, by = H + 60;
+  const bx = 70, by = H + 60 - KRAKEN_UP();
   c.strokeStyle = '#3a1a5e'; c.lineWidth = 26; c.lineCap = 'round'; c.shadowColor = '#b05cff'; c.shadowBlur = 24;
   for (let i = 0; i < 5; i++) {
     const a = -2.5 + i * .5;
@@ -3097,7 +3103,7 @@ function obsShapes(o) {
     case 'shark': return o.state === 'go' ? [{ c: [o.x - 14, o.y, 13] }, { c: [o.x + 12, o.y, 12] }] : [];
     case 'vent': return o.on > .35 ? [{ r: [o.x - o.w / 2 + 8, o.side === 0 ? -20 : A - o.len, o.w - 16, o.len + 20] }] : [];
     case 'sub': return [{ c: [o.x - 16, o.y, 19] }, { c: [o.x + 14, o.y, 17] }];
-    case 'merman': return R && R.vert ? [{ c: [o.x - 12, o.y, 15] }, { c: [o.x + 16, o.y, 14] }] : [{ c: [o.x, o.y - 12, 15] }, { c: [o.x - 2, o.y + 16, 14] }];
+    case 'merman': return R && R.vert ? (FLIP() ? [{ c: [o.x + 12, o.y, 15] }, { c: [o.x - 16, o.y, 14] }] : [{ c: [o.x - 12, o.y, 15] }, { c: [o.x + 16, o.y, 14] }]) : [{ c: [o.x, o.y - 12, 15] }, { c: [o.x - 2, o.y + 16, 14] }];
     case 'minilantern': return [{ c: [o.x, o.y, 15] }];
     case 'laser': {
       const body = [{ c: [o.x, o.y, 21] }];
@@ -3189,9 +3195,10 @@ function update(dt) {
   updateBg(dt, speed);
   // fish movement (convert screen input -> local)
   const [ix, iy] = inputVec();
-  let la = R.vert ? iy : ix, lc = R.vert ? ix : iy;
+  const fl = FLIP() ? -1 : 1;                     // swimming up: screen-down is backwards along the dive
+  let la = R.vert ? iy * fl : ix, lc = R.vert ? ix : iy;
   const dx = R.pendingDrag[0], dy = R.pendingDrag[1]; R.pendingDrag = [0, 0];
-  const da = R.vert ? dy : dx, dc = R.vert ? dx : dy;
+  const da = R.vert ? dy * fl : dx, dc = R.vert ? dx : dy;
   const ox = f.x, oy = f.y;
   // Dive zones are as wide as the screen, so on a wide phone screen the fish must
   // cover more ground sideways. Scale the sideways speed with it, or a wide screen
@@ -3200,7 +3207,8 @@ function update(dt) {
   f.x += la * swim * dt + da; f.y += lc * swim * across * dt + dc;
   if (R.mouseT) {
     // mouse: glide toward the pointer (screen -> local), quick but not a teleport
-    const tx = R.vert ? R.mouseT[1] : R.mouseT[0], ty = R.vert ? R.mouseT[0] - wallAt(R.cam + R.mouseT[1]) : R.mouseT[1];
+    const my = FLIP() ? H - R.mouseT[1] : R.mouseT[1];
+    const tx = R.vert ? my : R.mouseT[0], ty = R.vert ? R.mouseT[0] - wallAt(R.cam + my) : R.mouseT[1];
     const ddx = tx - f.x, ddy = ty - f.y, dd = Math.hypot(ddx, ddy), mv = Math.min(dd, 1150 * dt);
     if (dd > .5) { f.x += ddx / dd * mv; f.y += ddy / dd * mv; }
   }
@@ -3575,6 +3583,7 @@ function onHit(o) {
 function switchZone() {
   const oldA = R.A;
   const wy = wallAt(R.cam + R.fish.x);          // leaving a dive: lane -> screen needs this
+  const wasVert = R.vert, wasFlip = FLIP();
   R.zoneIdx++;
   R.zone = zoneOf(R.zoneIdx);
   R.stats.zones = R.zoneIdx + 1;
@@ -3583,8 +3592,9 @@ function switchZone() {
   const f = R.fish;
   if (changed) {
     // keep Finn exactly where he is on screen: the two frames just swap axes
-    const ox = f.x, oy = f.y + (R.vert ? 0 : wy);
-    f.x = oy; f.y = ox;
+    // where Finn is on screen right now, then the same spot in the new frame
+    const sx = wasVert ? f.y + wy : f.x, sy = wasVert ? (wasFlip ? H - f.x : f.x) : f.y;
+    if (R.vert) { f.x = FLIP() ? H - sy : sy; f.y = sx; } else { f.x = sx; f.y = sy; }
     const va = f.va; f.va = f.vc; f.vc = va;
     R.torps = [];                               // projectiles would land in mirrored positions
     f.x = clamp(f.x, 40, R.L * (R.vert ? .6 : .72));
@@ -3815,7 +3825,7 @@ function openWeak() {
   if (B.type === 'kraken') {
     // it peeks out of one of two hiding places, and not always the one you expect
     B.eyeSpot = Math.random() < .5 ? 0 : 1;
-    if (B.eyeSpot === 0) { B.wx = 116; B.wy = H - 32; }       // its body, down in the corner
+    if (B.eyeSpot === 0) { B.wx = 116; B.wy = H - 32 - KRAKEN_UP(); }       // its body, down in the corner
     else { B.wx = W - 120; B.wy = KRAKEN_CREVICE_Y(); }                      // a crevice up in the far corner
   }
   else if (B.type === 'crab') { B.wx = W * .45 + Math.sin(R.t * 1.2) * 10; B.wy = CRAB_BY() - 228 * CRAB_S(); }  // the crack in its shell
@@ -3872,7 +3882,7 @@ function lanternCounter(B, d) {
 // where each boss "is", for its aura and its big finish
 function bossAnchor(B) {
   if (B.type === 'meg') return [B.mx, B.my];
-  if (B.type === 'kraken') return [110, H - 50];
+  if (B.type === 'kraken') return [110, H - 50 - KRAKEN_UP()];
   if (B.type === 'lantern') return [W * .78 + Math.sin(R.t * .5) * 26, H * .42 + Math.sin(R.t * .8) * 30];
   return [W * .45, CRAB_BY() - 198 * CRAB_S()];
 }
@@ -3923,7 +3933,7 @@ function bossAttack() {
     SFX.splat();
     return .6;
   } else if (k === 'blobs') {
-    let ox = 130, oy = H - 70;
+    let ox = 130, oy = H - 70 - KRAKEN_UP();
     // never spit a blob right on top of the player
     if (Math.hypot(f.x - ox, f.y - oy) < 190) { ox = 120; oy = clamp(f.y > H / 2 ? 90 : H - 90, 90, H - 90); }
     const n = 3 + (B.lap > 0 ? 1 : 0) + (B.hp < B.hpMax / 2 ? 1 : 0);
@@ -4880,10 +4890,13 @@ function render() {
   }
   c.fillStyle = bgGrad; c.fillRect(0, 0, W, H);
   if (R.shake > 0) c.translate(rand(-1, 1) * R.shake, rand(-1, 1) * R.shake);
+  const flip = FLIP();
+  if (flip) { c.save(); c.translate(0, H); c.scale(1, -1); }      // swim-up view (see FLIP)
   drawParallax(c);
   drawSchool(c);
   // light rays
   if (R.rays > .02 && !GFX.lite) {
+    if (flip) { c.save(); c.translate(0, H); c.scale(1, -1); }    // sunlight still comes from above
     if (!rayGrad) {
       rayGrad = c.createLinearGradient(0, 0, 0, H);
       rayGrad.addColorStop(0, 'rgba(255,255,235,.16)'); rayGrad.addColorStop(1, 'rgba(255,255,235,0)');
@@ -4897,6 +4910,7 @@ function render() {
     }
     c.fill();
     c.restore();
+    if (flip) c.restore();
   }
   // background particles
   for (const p of R.parts) {
@@ -4947,7 +4961,10 @@ function render() {
     else if (o.t === 'puffer') drawPuffer(c, sx, sy, o.r, t, R.glow, o.puff || 0);
     else if (o.t === 'shark') drawShark(c, sx, sy, R.vert ? Math.PI / 2 : 0, t, R.glow);
     else if (o.t === 'sub') drawSub(c, sx, sy + (R.vert ? 0 : Math.sin(t * 1.6 + o.bob) * 4), R.vert ? Math.PI / 2 : 0, t, R.glow, o.flash || 0);
-    else if (o.t === 'merman') facing(c, sx, sy, 0, (x, y) => drawMerman(c, x, y + Math.sin(t * 1.4 + o.bob) * 5, t, R.glow, o));
+    else if (o.t === 'merman') {
+      if (flip) { c.save(); c.translate(sx, sy); c.scale(1, -1); drawMerman(c, 0, Math.sin(t * 1.4 + o.bob) * 5, t, R.glow, o); c.restore(); }
+      else drawMerman(c, sx, sy + Math.sin(t * 1.4 + o.bob) * 5, t, R.glow, o);
+    }
     else if (o.t === 'minilantern') {
       // heading in screen space (the local frame is swapped while diving)
       const hx = R.vert ? Math.sin(o.ang) : Math.cos(o.ang), hy = R.vert ? Math.cos(o.ang) : Math.sin(o.ang);
@@ -5073,7 +5090,12 @@ function render() {
   for (const p of R.fx) { c.globalAlpha = Math.min(1, p.life * 2.5); c.fillStyle = p.col; c.beginPath(); c.arc(p.x, p.y, p.r, 0, 7); c.fill(); }
   c.globalAlpha = 1;
   c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = '700 22px Fredoka, sans-serif';
-  for (const fl of R.floats) { c.globalAlpha = Math.min(1, fl.life * 2); c.lineWidth = 4; c.strokeStyle = 'rgba(0,0,0,.5)'; c.strokeText(fl.text, fl.x, fl.y); c.fillStyle = fl.col; c.fillText(fl.text, fl.x, fl.y); }
+  for (const fl of R.floats) {
+    c.globalAlpha = Math.min(1, fl.life * 2); c.lineWidth = 4;
+    c.save(); c.translate(fl.x, fl.y); if (flip) c.scale(1, -1);       // words always read the right way up
+    c.strokeStyle = 'rgba(0,0,0,.5)'; c.strokeText(fl.text, 0, 0); c.fillStyle = fl.col; c.fillText(fl.text, 0, 0);
+    c.restore();
+  }
   c.globalAlpha = 1;
   // deep-water vignette
   const lightPerk = perkOf(R.p, 'light', 0) || (R.p.pet === 'jelly' ? 1 : 0);
@@ -5094,7 +5116,7 @@ function render() {
   }
   // coins arcing up to the counter in the corner
   if (R.flyers.length) {
-    const tx = 96, ty = 30;                 // roughly where the coin pill sits
+    const tx = PORTRAIT ? 150 : 96, ty = flip ? H - 30 : 30;     // roughly where the coin pill sits
     for (const fl of R.flyers) {
       if (fl.t < 0) continue;
       const k = fl.t / fl.dur, e = k * k * (3 - 2 * k);
@@ -5109,6 +5131,7 @@ function render() {
     c.globalAlpha = 1;
   }
   drawForeground(c);                       // the near layer passes in front of everything
+  if (flip) c.restore();
   if (R.flash > 0) { c.fillStyle = `rgba(255,255,255,${R.flash * .7})`; c.fillRect(-20, -20, W + 40, H + 40); }
 }
 
