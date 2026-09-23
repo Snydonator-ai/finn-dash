@@ -26,7 +26,7 @@ button{font-family:var(--font);font-weight:600;cursor:pointer;border:none;color:
 .bubbles-bg{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 .bubbles-bg i{position:absolute;bottom:-30px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);animation:rise linear infinite}
 @keyframes rise{to{transform:translateY(-115vh) translateX(20px)}}
-.screen > *{position:relative;z-index:1}
+.screen > *{position:relative;z-index:1;flex-shrink:0}
 .logo{font-size:clamp(46px,10vw,96px);font-weight:700;line-height:.95;margin:3vh 0 6px;text-align:center;letter-spacing:.02em;
   color:#fff;text-shadow:0 4px 0 #0a4f8a,0 8px 0 #073a68,0 12px 22px rgba(0,0,0,.35)}
 .logo .d{color:var(--sun);text-shadow:0 4px 0 #c46a00,0 8px 0 #8d4a00,0 12px 22px rgba(0,0,0,.35)}
@@ -34,6 +34,7 @@ button{font-family:var(--font);font-weight:600;cursor:pointer;border:none;color:
 h2{margin:6px 0 12px;font-size:26px;text-shadow:0 3px 0 rgba(0,0,0,.25)}
 h3{margin:0 0 8px;font-size:19px}
 .btn{background:linear-gradient(180deg,#26b8f0,#1283c9);border-radius:16px;padding:12px 22px;font-size:19px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1;
   box-shadow:0 5px 0 #0a4f8a,0 8px 14px rgba(0,0,0,.25);transition:transform .08s,box-shadow .08s}
 .btn:active{transform:translateY(4px);box-shadow:0 1px 0 #0a4f8a,0 3px 6px rgba(0,0,0,.25)}
 .btn.sun{background:linear-gradient(180deg,#ffe066,#ffb422);color:#5a3100;box-shadow:0 5px 0 #c46a00,0 8px 14px rgba(0,0,0,.25)}
@@ -193,8 +194,9 @@ body.touch #pulseBtn small{display:none}
 #bossRingWrap svg{position:absolute;top:0;right:0;bottom:0;left:0;inset:0}
 #bossTime{font-size:34px;font-weight:700;text-shadow:0 2px 0 rgba(0,0,0,.6)}
 #bossSub{font-size:15px;color:#ffb3bf;font-weight:700;letter-spacing:.08em}
-.perk{color:var(--kelp);font-size:14px;font-weight:700;min-height:20px}
-.small-note{color:var(--dim);font-size:14px}
+.perk{color:var(--kelp);font-size:14px;font-weight:700;min-height:20px;line-height:1.35;text-align:center;margin-bottom:2px;max-width:min(560px,92vw)}
+.small-note{color:var(--dim);font-size:14px;line-height:1.35}
+#hubStyle{text-align:center;margin:0 0 10px;max-width:min(560px,92vw)}
 @media (max-width:700px){.screen{padding-top:58px}}
 /* Little fingers need real targets: everything tappable is at least ~46px on touch screens. */
 body.touch .btn{min-height:48px}
