@@ -13,7 +13,7 @@ android {
         // Every cloud build gets a higher version code than the last, so a new APK
         // always installs over the old one without touching this file.
         versionCode 100 + (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInteger()
-        versionName "1.7"
+        versionName "2.1"
     }
 
     signingConfigs {
