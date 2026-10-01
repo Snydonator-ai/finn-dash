@@ -84,16 +84,43 @@ input[type=text]:focus{border-color:var(--aqua)}
 .coin{display:inline-block;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6b0,#ffd23f 45%,#e09a00);box-shadow:0 0 6px rgba(255,210,63,.8);vertical-align:-3px}
 .big-num .coin{width:.62em;height:.62em;vertical-align:.02em;margin-right:.08em}
 #hubFish{width:260px;height:150px;margin:6px auto}
-.hubgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:16px}
+.hubgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:22px}
+@media (min-width:780px){.hubgrid{grid-template-columns:1.3fr 1fr 1fr}}
 .mission{display:flex;align-items:center;gap:10px;margin:8px 0}
 .mission .bar{flex:1;height:10px;border-radius:6px;background:#062447;overflow:hidden;border:1px solid var(--line)}
 .mission .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--kelp),var(--aqua))}
 .mission .txt{flex:2;font-size:15px}
 .mission .rw{font-size:14px;color:var(--sun);white-space:nowrap}
-.stat{display:flex;justify-content:space-between;font-size:16px;margin:4px 0;color:var(--dim)}
+.stat{display:flex;justify-content:space-between;gap:8px;font-size:16px;margin:4px 0;color:var(--dim)}
+.hubmenu{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(720px,100%);margin-top:12px}
+.hubmenu .btn{position:relative;width:100%;padding-left:10px;padding-right:10px;white-space:nowrap}
+.badge:empty{display:none}
+.badge{position:absolute;top:-9px;right:-6px;background:#ff3b5c;color:#fff;font-size:12px;font-weight:800;letter-spacing:.04em;
+  padding:3px 7px;border-radius:999px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);animation:badgeBob 1.6s ease-in-out infinite}
+.badge.gold{background:#ffb422;color:#5a3100}
+@keyframes badgeBob{50%{transform:translateY(-3px)}}
+.quest{margin:7px 0}
+.quest .q{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.quest .q b{white-space:nowrap}
+.quest .bar{height:9px;border-radius:6px;background:#062447;overflow:hidden;border:1px solid var(--line);margin-top:3px}
+.quest .bar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#ff9a3d)}
+.quest.done .bar i{background:linear-gradient(90deg,var(--kelp),var(--aqua))}
+@media (max-width:620px){
+  .hubmenu{grid-template-columns:repeat(2,1fr);gap:10px}
+  .hubmenu .btn{font-size:16px}
+}
 .stat b{color:var(--text)}
 /* shop */
 .tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+#pulseBtn.tipme::after{content:'Tap me to blast!';position:absolute;right:0;bottom:100%;margin-bottom:12px;white-space:nowrap;
+  background:#fff;color:#0b3a66;font:700 17px var(--font);padding:7px 12px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.35);animation:badgeBob 1s ease-in-out infinite}
+#pulseBtn.tipme{animation:tipPulse .6s ease-in-out infinite}
+@keyframes tipPulse{50%{transform:scale(1.12)}}
+.pausegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:16px auto 0;width:min(420px,100%)}
+.pausegrid .btn{width:100%;line-height:1.15}
+#ov-pause .card{text-align:center}
+.tab{position:relative}
+.tab .badge{top:-8px;right:-5px;font-size:11px;padding:1px 6px}
 .tab.sel{background:linear-gradient(180deg,#ffe066,#ffb422);color:#5a3100;box-shadow:0 5px 0 #c46a00}
 .shopgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
 .shopgrid.stack{display:block}
@@ -272,7 +299,7 @@ body.touch .screen{padding-left:calc(16px + var(--sal,0px));padding-right:calc(1
   #hubFish{width:210px;height:120px;margin:2px auto}
   #scr-hub .perk{margin:2px 0}
   #scr-hub .row{margin-top:6px!important}
-  #scr-hub .hubgrid{margin-top:8px}
+  #scr-hub .hubgrid{margin-top:16px}
   #scr-hub .card{padding:12px}
 }
 /* short landscape (the little tablets): squeeze the hub so the bottom row is still on screen */
@@ -411,15 +438,14 @@ body.portrait .item.clam{grid-column:1/-1}
   <div class="row" style="margin-top:4px">
     <button class="btn sun big" id="playBtn">▶ SWIM!</button>
   </div>
-  <div class="row" style="margin-top:10px">
-    <button class="btn aqua" id="dailyBtn">🗓️ Daily Challenge</button>
+  <!-- six doors off the menu, all the same size: ways to play on top, your stuff underneath -->
+  <div class="hubmenu">
+    <button class="btn aqua" id="dailyBtn">🗓️ Daily Challenge<span class="badge" id="dailyBadge"></span></button>
     <button class="btn kelp" id="practiceBtn">🐙 Boss Practice</button>
     <button class="btn rose" id="rushBtn">🥇 Boss Rush</button>
-  </div>
-  <div class="row" style="margin-top:10px">
-    <button class="btn coral" id="shopBtn">🛒 Shop</button>
-    <button class="btn plum" id="trophyBtn">🏆 Trophies</button>
-    <button class="btn ocean" id="bookBtn">📖 Sea Friends</button>
+    <button class="btn coral" id="shopBtn">🛒 Shop<span class="badge" id="shopBadge"></span></button>
+    <button class="btn plum" id="trophyBtn">🏆 Trophies<span class="badge" id="trophyBadge"></span></button>
+    <button class="btn ocean" id="bookBtn">📖 Sea Friends<span class="badge" id="bookBadge"></span></button>
   </div>
   <div class="hubgrid wide">
     <div class="card">
@@ -427,17 +453,18 @@ body.portrait .item.clam{grid-column:1/-1}
       <div id="missions"></div>
     </div>
     <div class="card">
+      <h3>🧭 Quests</h3>
+      <div id="quests"></div>
+    </div>
+    <div class="card">
       <h3>📊 Stats</h3>
       <div id="stats"></div>
-      <div class="row" style="margin-top:10px;justify-content:flex-start">
-        <span class="small-note">Swim speed:</span>
-        <button class="btn ghost small" id="speedToggle"></button>
-      </div>
     </div>
   </div>
   <div class="row hub-bottom" style="margin-top:16px">
+    <button class="btn ghost small" id="speedToggle"></button>
     <button class="btn plum small" id="secretBtn">🔑 Secret Codes</button>
-    <button class="btn ghost small" id="switchBtn">Switch Player</button>
+    <button class="btn ghost small" id="switchBtn">👥 Switch Player</button>
   </div>
 </section>
 
@@ -489,15 +516,18 @@ body.portrait .item.clam{grid-column:1/-1}
 
 <section class="screen" id="scr-shop">
   <div class="topbar wide">
-    <h2 style="margin:0">Shop</h2>
-    <span class="pill"><span class="coin"></span> <b id="shopCoins">0</b></span>
+    <h2 style="margin:0">🛒 Shop</h2>
+    <div class="row">
+      <span class="pill"><span class="coin"></span> <b id="shopCoins">0</b></span>
+      <button class="btn ghost small" id="shopBackTop">Back</button>
+    </div>
   </div>
   <div class="tabs">
-    <button class="btn small tab" data-tab="up">⬆ Upgrades</button>
-    <button class="btn small tab" data-tab="fish">🐟 Fish</button>
-    <button class="btn small tab" data-tab="pet">🐢 Pets</button>
-    <button class="btn small tab" data-tab="style">✨ Style</button>
-    <button class="btn small tab" data-tab="swag">🕶️ Swag</button>
+    <button class="btn small tab" data-tab="up">⬆ Upgrades<span class="badge" data-tb="up"></span></button>
+    <button class="btn small tab" data-tab="fish">🐟 Fish<span class="badge" data-tb="fish"></span></button>
+    <button class="btn small tab" data-tab="pet">🐢 Pets<span class="badge" data-tb="pet"></span></button>
+    <button class="btn small tab" data-tab="style">✨ Style<span class="badge" data-tb="style"></span></button>
+    <button class="btn small tab" data-tab="swag">🕶️ Swag<span class="badge" data-tb="swag"></span></button>
   </div>
   <div class="shopgrid wide" id="shopGrid"></div>
   <button class="btn" id="shopBack" style="margin-top:18px">Back</button>
@@ -642,15 +672,16 @@ body.portrait .item.clam{grid-column:1/-1}
 </div>
 
 <div class="ov" id="ov-pause"><div class="card">
-  <h2>Paused</h2>
-  <div class="row" style="flex-direction:column">
-    <button class="btn sun" id="pResume">Keep Swimming</button>
+  <h2>⏸️ Paused</h2>
+  <button class="btn sun" id="pResume" style="font-size:24px;padding:14px 34px">▶ Keep Swimming</button>
+  <!-- the settings, two by two, so the whole menu fits a phone held sideways -->
+  <div class="pausegrid">
     <button class="btn ghost small" id="pSound">Sound: On</button>
     <button class="btn ghost small" id="pMusic">Music: On</button>
-    <button class="btn ghost small" id="pPhoto">📷 Photo Mode</button>
     <button class="btn ghost small" id="pRumble">Rumble: On</button>
     <button class="btn ghost small" id="gfxBtn">Graphics: Auto</button>
-    <button class="btn ghost small" id="pQuit">End Run</button>
+    <button class="btn ghost small" id="pPhoto">📷 Photo Mode</button>
+    <button class="btn coral small" id="pQuit">🏁 End Run</button>
   </div>
 </div></div>
 
@@ -1145,9 +1176,13 @@ function fixPlayer(p) {
   p.bossKinds = Array.isArray(p.bossKinds) ? p.bossKinds : [];
   p.dailyDays = Array.isArray(p.dailyDays) ? p.dailyDays : [];
   p.book = Array.isArray(p.book) ? p.book : [];
+  // what the menu's NEW flags compare against (players from before the flags start up to date)
+  if (p.achSeen == null) p.achSeen = p.ach.length;
+  if (p.bookSeen == null) p.bookSeen = p.book.length;
   p.warp = clamp(Math.floor(Number(p.warp)) || 0, 0, 3);
   p.mapPieces = clamp(Math.floor(Number(p.mapPieces)) || 0, 0, 3);
   p.babies = clamp(Math.floor(Number(p.babies)) || 0, 0, MAMA_N);
+  p.tips = Array.isArray(p.tips) ? p.tips : [];   // first-swim tips already shown
   p.codes = Array.isArray(p.codes) ? p.codes : [];   // secret codes already used
   p.mermen = clamp(Math.floor(Number(p.mermen)) || 0, 0, KING_N);
   // swimmers who beat bosses before warps existed get their warps straight away
@@ -1747,6 +1782,17 @@ function glowSprite(col) {
   g.globalCompositeOperation = 'source-in'; g.fillStyle = col; g.fillRect(0, 0, 64, 64);
   glowCache.set(col, sp); return sp;
 }
+/* Emoji drawn once into a little canvas at 2x and reused: drawing emoji text every frame is slow
+   (the browser goes through font fallback each time). */
+const emojiCache = new Map();
+function emojiSprite(ch, px) {
+  const key = ch + px; let sp = emojiCache.get(key); if (sp) return sp;
+  sp = document.createElement('canvas'); sp.width = sp.height = Math.ceil(px * 2.6);
+  const g = sp.getContext('2d');
+  g.font = `${px * 2}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch, sp.width / 2, sp.height / 2 + px * .1);
+  emojiCache.set(key, sp); return sp;
+}
 /* Paint a glow of radius rx (and ry) centred on x, y, at the given strength. */
 function glowAt(c, x, y, rx, ry, col, a = 1) {
   if (a <= .01) return;
@@ -1800,8 +1846,9 @@ function drawFish(c, x, y, scale, angle, skin, t, opts = {}) {
   } else if (skin.pat === 'spots') {
     c.fillStyle = 'rgba(255,255,255,.7)'; [[-10, -6, 3], [-2, 6, 2.5], [6, -8, 2.2], [-14, 5, 2]].forEach(([a, b, r]) => { c.beginPath(); c.arc(a, b, r, 0, 7); c.fill(); });
   } else if (skin.pat === 'glow') {
-    c.strokeStyle = skin.stripe; c.lineWidth = 2; c.shadowColor = skin.stripe; c.shadowBlur = 8;
-    c.beginPath(); c.moveTo(-18, 2); c.quadraticCurveTo(0, -6, 20, 2); c.stroke();
+    c.strokeStyle = skin.stripe;
+    c.beginPath(); c.moveTo(-18, 2); c.quadraticCurveTo(0, -6, 20, 2);
+    c.globalAlpha = .3; c.lineWidth = 7; c.stroke(); c.globalAlpha = 1; c.lineWidth = 2; c.stroke();   // a soft glow, then the line
     c.fillStyle = skin.stripe; [[-8, 7], [2, 8], [-14, -4]].forEach(([a, b]) => { c.beginPath(); c.arc(a, b, 1.6, 0, 7); c.fill(); });
   } else if (skin.pat === 'shine') {
     const sx = ((t * 40) % 80) - 40;
@@ -2029,8 +2076,9 @@ function drawHat(c, id, t) {
       c.strokeStyle = '#6fd86a';
       c.beginPath(); c.moveTo(d * 4, 0); c.quadraticCurveTo(d * 8 + w2, -7, d * 6 + w2 * 1.6, -13); c.stroke();
       const bx2 = d * 6 + w2 * 1.6, by2 = -14.5;
-      c.fillStyle = '#9dff7a'; c.shadowColor = '#7cff6b'; c.shadowBlur = 8;
-      c.beginPath(); c.arc(bx2, by2, 3.1, 0, 7); c.fill(); c.shadowBlur = 0;
+      glowAt(c, bx2, by2, 9, 9, '#7cff6b', .9);
+      c.fillStyle = '#9dff7a';
+      c.beginPath(); c.arc(bx2, by2, 3.1, 0, 7); c.fill();
       c.fillStyle = 'rgba(255,255,255,.8)'; c.beginPath(); c.arc(bx2 - 1, by2 - 1, 1, 0, 7); c.fill();
     }
   } else if (id === 'yeti') {
@@ -2292,12 +2340,14 @@ function drawStreamer(c, pts, def, t, scale, vert = false) {
   }
   c.restore();
 }
+// a soft halo in each buddy's colour (a cached sprite: the old per-shape blur cost a dozen blurred draws a frame)
+const PET_GLOW = { seahorse: '#ffd23f', turtle: '#5ef08a', puff: '#ffd08a', jelly: '#7fe8ff', dolphin: '#9beaff', octo: '#c77dff' };
 function drawPet(c, id, x, y, t, glow) {
   if (id === 'none') return;
   c.save(); c.translate(x, y);
-  if (glow) { c.shadowBlur = 12 * glow; }
+  const ga = id === 'jelly' ? .85 : (glow || 0) * .7;
+  if (ga > .02) glowAt(c, 0, 2, 30, 28, PET_GLOW[id] || '#ffffff', ga);
   if (id === 'seahorse') {
-    c.shadowColor = '#ffd23f';
     c.fillStyle = '#ffc93c'; c.strokeStyle = '#e09a00'; c.lineWidth = 2;
     c.beginPath(); c.arc(0, -8, 6, 0, 7); c.fill();
     c.beginPath(); c.moveTo(4, -9); c.lineTo(11, -7); c.lineTo(4, -5); c.fill();
@@ -2305,7 +2355,6 @@ function drawPet(c, id, x, y, t, glow) {
     c.fillStyle = '#10213a'; c.beginPath(); c.arc(2, -9, 1.6, 0, 7); c.fill();
     c.fillStyle = '#ff9d2e'; c.beginPath(); c.ellipse(-6, 0, 3, 5 + Math.sin(t * 12), 0, 0, 7); c.fill();
   } else if (id === 'turtle') {
-    c.shadowColor = '#5ef08a';
     const f = Math.sin(t * 8) * .4;
     c.fillStyle = '#9be37a';
     [[-8, -7, -f], [-8, 7, f], [7, -7, f], [7, 7, -f]].forEach(([a, b, r]) => { c.save(); c.translate(a, b); c.rotate(r); ellipse(c, 0, 0, 5, 2.5); c.fill(); c.restore(); });
@@ -2314,7 +2363,6 @@ function drawPet(c, id, x, y, t, glow) {
     c.fillStyle = '#52c46e'; [[-4, -3], [3, -3], [-4, 3], [3, 3]].forEach(([a, b]) => { c.beginPath(); c.arc(a, b, 2.6, 0, 7); c.fill(); });
     c.fillStyle = '#10213a'; c.beginPath(); c.arc(13.5, -1.5, 1.2, 0, 7); c.fill();
   } else if (id === 'puff') {
-    c.shadowColor = '#ffd08a';
     const pf = 1 + Math.sin(t * 3) * .08;
     c.fillStyle = '#ffd08a'; ellipse(c, 0, 0, 11 * pf, 10 * pf); c.fill();
     c.fillStyle = '#f2b45f';
@@ -2324,7 +2372,6 @@ function drawPet(c, id, x, y, t, glow) {
     c.fillStyle = '#10213a'; c.beginPath(); c.arc(5.4, -2.6, 1.7, 0, 7); c.fill();
     c.strokeStyle = '#a8632a'; c.lineWidth = 1.4; c.beginPath(); c.arc(8, 3, 2, .2, 2.4); c.stroke();
   } else if (id === 'jelly') {
-    c.shadowColor = '#7fe8ff'; c.shadowBlur = 18;
     c.strokeStyle = 'rgba(160,230,255,.85)'; c.lineWidth = 2; c.lineCap = 'round';
     for (let i = 0; i < 5; i++) {
       const a = -7 + i * 3.5;
@@ -2341,7 +2388,6 @@ function drawPet(c, id, x, y, t, glow) {
     c.fillStyle = '#10213a';
     c.beginPath(); c.arc(-3, -2, 1.3, 0, 7); c.arc(3, -2, 1.3, 0, 7); c.fill();
   } else if (id === 'dolphin') {
-    c.shadowColor = '#9beaff';
     const dg = memoGrad(c, 'petDolphin', () => {
       const g = c.createLinearGradient(0, -10, 0, 10);
       g.addColorStop(0, '#8fb7d6'); g.addColorStop(.55, '#5b86ad'); g.addColorStop(1, '#dbeaf5'); return g;
@@ -2358,7 +2404,6 @@ function drawPet(c, id, x, y, t, glow) {
     c.strokeStyle = '#10213a'; c.lineWidth = 1; c.beginPath(); c.arc(12, 1.5, 2.4, 0, 1.4); c.stroke();
     c.restore();
   } else if (id === 'octo') {
-    c.shadowColor = '#c77dff';
     c.strokeStyle = '#b86bff'; c.lineWidth = 3; c.lineCap = 'round';
     for (let i = 0; i < 5; i++) { const a = -8 + i * 4; c.beginPath(); c.moveTo(a, 2); c.quadraticCurveTo(a + Math.sin(t * 6 + i) * 4, 10, a + Math.sin(t * 6 + i + 1) * 3, 16); c.stroke(); }
     c.fillStyle = '#c77dff'; ellipse(c, 0, -3, 10, 9); c.fill();
@@ -2487,7 +2532,7 @@ function drawMine(c, x, y, r, t, glow, ax, ay) {
 }
 function drawSub(c, x, y, angle, t, glow, flash) {
   c.save(); c.translate(x, y); c.rotate(angle);
-  if (glow) { c.shadowColor = '#ffd23f'; c.shadowBlur = 10 * glow; }
+  if (glow) glowAt(c, 4, -6, 54, 36, '#ffd23f', .5 * glow);
   // propeller
   c.strokeStyle = '#6e7b8c'; c.lineWidth = 3;
   c.beginPath(); c.moveTo(34, 0); c.lineTo(42, 0); c.stroke();
@@ -2505,7 +2550,6 @@ function drawSub(c, x, y, angle, t, glow, flash) {
   // conning tower
   c.fillStyle = '#e2a324'; roundRect(c, -8, -30, 22, 16, 5); c.fill();
   c.strokeStyle = '#7d5410'; c.lineWidth = 3; c.beginPath(); c.moveTo(4, -30); c.lineTo(4, -42); c.lineTo(-6, -42); c.stroke();
-  c.shadowBlur = 0;
   // porthole with a little pilot light
   c.fillStyle = '#0b2b45'; c.beginPath(); c.arc(-16, 0, 9, 0, 7); c.fill();
   c.fillStyle = flash > 0 ? '#ff4d6a' : '#7fe8ff'; c.beginPath(); c.arc(-16, 0, 5.5, 0, 7); c.fill();
@@ -3090,9 +3134,9 @@ function drawLavaCrab(c, x, y, t, glow, o) {
     const gg = c.createRadialGradient(-6, -8, 2, 0, 0, 26);
     gg.addColorStop(0, '#ff9a4a'); gg.addColorStop(.6, '#d2431c'); gg.addColorStop(1, '#6d1a0b'); return gg;
   });
-  c.fillStyle = g; c.shadowColor = '#ff6a1a'; c.shadowBlur = 14;
+  glowAt(c, sway * .3, 0, 34, 28, '#ff6a1a', .6);
+  c.fillStyle = g;
   c.beginPath(); c.ellipse(sway * .3, 0, 21, 16, 0, 0, 7); c.fill();
-  c.shadowBlur = 0;
   // cracks glowing through the shell
   c.strokeStyle = `rgba(255,190,80,${.6 + .4 * Math.sin(t * 3)})`; c.lineWidth = 1.8;
   c.beginPath(); c.moveTo(-12, -4); c.lineTo(-3, 2); c.lineTo(4, -5); c.lineTo(12, 1); c.stroke();
@@ -3108,8 +3152,9 @@ function drawLavaCrab(c, x, y, t, glow, o) {
     c.beginPath(); c.moveTo(-2, 5); c.quadraticCurveTo(11, 9, 14, 2); c.quadraticCurveTo(5, 2, -1, 2); c.closePath(); c.fill();
     if (raised > 0) {
       // molten glob gathering in the claw
-      c.fillStyle = `rgba(255,190,90,${.5 + .5 * raised})`; c.shadowColor = '#ff7a1a'; c.shadowBlur = 16;
-      c.beginPath(); c.arc(4, 0, 4 + raised * 4, 0, 7); c.fill(); c.shadowBlur = 0;
+      glowAt(c, 4, 0, 14 + raised * 6, 14 + raised * 6, '#ff7a1a', .8 * raised);
+      c.fillStyle = `rgba(255,190,90,${.5 + .5 * raised})`;
+      c.beginPath(); c.arc(4, 0, 4 + raised * 4, 0, 7); c.fill();
     }
     c.restore();
   }
@@ -3125,7 +3170,7 @@ function drawLavaCrab(c, x, y, t, glow, o) {
 }
 function drawLavaBall(c, x, y, t) {
   c.save(); c.translate(x, y);
-  c.shadowColor = '#ff6a1a'; c.shadowBlur = 22;
+  glowAt(c, 0, 0, 26, 26, '#ff6a1a', .85);
   const g = memoGrad(c, 'lavaBall', () => {
     const gg = c.createRadialGradient(-3, -3, 1, 0, 0, 12);
     gg.addColorStop(0, '#fff2c0'); gg.addColorStop(.45, '#ffa23c'); gg.addColorStop(1, '#d43a10'); return gg;
@@ -3134,7 +3179,6 @@ function drawLavaBall(c, x, y, t) {
   c.beginPath();
   for (let i = 0; i < 9; i++) { const a = i / 9 * 6.283, rr = 11 * (.85 + .2 * Math.sin(t * 9 + i * 2.1)); i ? c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : c.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); }
   c.closePath(); c.fill();
-  c.shadowBlur = 0;
   c.fillStyle = 'rgba(255,255,220,.85)'; c.beginPath(); c.arc(-3, -3, 3.2, 0, 7); c.fill();
   c.restore();
 }
@@ -3146,10 +3190,9 @@ function drawTrident(c, x, y, angle, t) {
 }
 function drawTorpedo(c, x, y, angle, t) {
   c.save(); c.translate(x, y); c.rotate(angle);
-  c.shadowColor = '#ffb422'; c.shadowBlur = 12;
+  glowAt(c, -2, 0, 26, 14, '#ffb422', .55);
   c.fillStyle = '#d8e2ec'; c.beginPath(); c.ellipse(0, 0, 15, 6, 0, 0, 7); c.fill();
   c.fillStyle = '#ff4d6a'; c.beginPath(); c.moveTo(9, -6); c.quadraticCurveTo(20, 0, 9, 6); c.closePath(); c.fill();
-  c.shadowBlur = 0;
   c.fillStyle = '#6e7b8c';
   c.beginPath(); c.moveTo(-10, -5); c.lineTo(-17, -11); c.lineTo(-13, -3); c.closePath(); c.fill();
   c.beginPath(); c.moveTo(-10, 5); c.lineTo(-17, 11); c.lineTo(-13, 3); c.closePath(); c.fill();
@@ -3394,6 +3437,7 @@ function drawThrone(c, t) {
 }
 // one of his guards, bigger than the ones out in the ocean
 function drawGuard(c, m, t) {
+  { const ga = c.globalAlpha; c.globalAlpha = .6; c.drawImage(ringSprite(DANGER_COL), m.x - 68, m.y - 94, 136, 162); c.globalAlpha = ga; }
   c.save(); c.translate(m.x, m.y); c.scale(1.5, 1.5);
   drawMerman(c, 0, 0, t, 1, { face: m.face, wind: m.wind > 0 ? .38 * Math.min(1, m.wind / .8) : 0, bob: m.bob });
   c.restore();
@@ -3677,8 +3721,8 @@ function drawSpace(c) {
     g.addColorStop(0, '#7ec8ff'); g.addColorStop(.55, '#2f7bd6'); g.addColorStop(1, '#0b2a5c'); return g;
   });
   c.save(); c.translate(ex, ey);
-  c.shadowColor = 'rgba(120,200,255,.6)'; c.shadowBlur = 40;
-  c.fillStyle = eg; c.beginPath(); c.arc(0, 0, er, 0, 7); c.fill(); c.shadowBlur = 0;
+  glowAt(c, 0, 0, er * 1.6, er * 1.6, '#78c8ff', .55);
+  c.fillStyle = eg; c.beginPath(); c.arc(0, 0, er, 0, 7); c.fill();
   c.fillStyle = 'rgba(110,220,140,.75)';
   c.beginPath(); c.ellipse(-er * .2, -er * .15, er * .42, er * .22, .4, 0, 7); c.fill();
   c.beginPath(); c.ellipse(er * .3, er * .3, er * .3, er * .18, -.3, 0, 7); c.fill();
@@ -4098,7 +4142,10 @@ function drawHazard(c, h, t, type) {
     if (tele) {
       c.strokeStyle = `rgba(255,150,60,${.35 + warn * .5})`; c.lineWidth = 4; c.setLineDash([12, 12]); c.lineDashOffset = -h.t * 60;
       c.beginPath(); c.moveTo(h.x, h.y); c.lineTo(h.x + Math.cos(a) * 1400, h.y + Math.sin(a) * 1400); c.stroke(); c.setLineDash([]);
-    } else { c.translate(h.x, h.y); c.scale(1.35, 1.35); drawTrident(c, 0, 0, a, t); }
+    } else {
+      c.globalAlpha = .6; c.drawImage(ringSprite(DANGER_COL), h.x - 37, h.y - 37, 75, 75); c.globalAlpha = 1;
+      c.translate(h.x, h.y); c.scale(1.35, 1.35); drawTrident(c, 0, 0, a, t);
+    }
     c.restore(); return;
   }
   if (h.style === 'kthrust' && !tele) {
@@ -4433,6 +4480,56 @@ function drawCoin(c, x, y, t, gem, glow) {
   }
   c.restore();
 }
+/* ----- reading the water at a glance: bad things wear a red halo, good things a golden sparkle -----
+   Plenty of the creatures are cute on purpose (a puffer, a turtle, a smiling crab), so new players
+   need a hint which ones to avoid. One cached sprite each: cheap on every graphics tier. */
+const DANGER_COL = '#ff2d4b', GOOD_COL = '#ffe27a';
+// rough size of each creature's body (along the swim direction, across it), for its halo
+const DANGER_SIZE = { rock: null, jelly: null, puffer: null, mine: null, shark: [64, 30], sub: [50, 30], merman: [32, 50],
+  turtle: [40, 34], trigger: [26, 22], minilantern: [26, 24], lavacrab: [34, 28], shoalfish: [16, 13], trap: null };
+function dangerHalo(c, x, y, o) {
+  if (!(o.t in DANGER_SIZE) || o.t === 'trap') return;
+  let rx, ry;
+  const sz = DANGER_SIZE[o.t];
+  if (sz) { rx = sz[0]; ry = sz[1]; if (R.vert && o.t !== 'merman') { const q = rx; rx = ry; ry = q; } }
+  else { rx = ry = (o.r || 20) + 6; }
+  const pulse = .85 + .15 * Math.sin(R.t * 3 + (o.ph || o.bob || 0));
+  const ga = c.globalAlpha; c.globalAlpha = ga * (R.glow > .5 ? .6 : .72) * pulse;
+  c.drawImage(ringSprite(DANGER_COL), x - rx * 1.53, y - ry * 1.53, rx * 3.06, ry * 3.06);
+  c.globalAlpha = ga;
+}
+/* A soft ring rather than a blob: clear in the middle (the creature covers it anyway), brightest
+   just outside the body, so it reads like a glowing outline. */
+const ringCache = new Map();
+function ringSprite(col) {
+  let sp = ringCache.get(col); if (sp) return sp;
+  sp = document.createElement('canvas'); sp.width = sp.height = 96;
+  const g = sp.getContext('2d'), gr = g.createRadialGradient(48, 48, 0, 48, 48, 48);
+  // the ring reaches right to the sprite's edge, so no time is spent blitting empty corners
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.54, 'rgba(255,255,255,0)');
+  gr.addColorStop(.67, 'rgba(255,255,255,.9)'); gr.addColorStop(.8, 'rgba(255,255,255,.32)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 96, 96);
+  g.globalCompositeOperation = 'source-in'; g.fillStyle = col; g.fillRect(0, 0, 96, 96);
+  ringCache.set(col, sp); return sp;
+}
+// a few twinkling four-point stars around something worth grabbing
+function sparkles(c, x, y, r, t, n = 3) {
+  c.save(); c.fillStyle = '#fffbe6';
+  for (let i = 0; i < n; i++) {
+    const k = (t * .8 + i / n) % 1, a = i * 2.1 + t * .7, d = r * (1.05 + .25 * Math.sin(t * 2 + i));
+    const tw = Math.sin(k * Math.PI), sz = 2.2 + 3.2 * tw;
+    if (tw < .1) continue;
+    const px = x + Math.cos(a) * d, py = y + Math.sin(a) * d;
+    c.globalAlpha = tw;
+    // one four-point star as a single path (both diamonds in one fill)
+    c.beginPath(); c.moveTo(px, py - sz * 1.6); c.lineTo(px + sz * .45, py); c.lineTo(px, py + sz * 1.6); c.lineTo(px - sz * .45, py); c.closePath();
+    c.moveTo(px - sz * 1.6, py); c.lineTo(px, py - sz * .45); c.lineTo(px + sz * 1.6, py); c.lineTo(px, py + sz * .45); c.closePath(); c.fill();
+  }
+  c.restore();
+}
+function goodHalo(c, x, y, r, t, a = .55) {
+  glowAt(c, x, y, r * 1.7, r * 1.7, GOOD_COL, a * (.8 + .2 * Math.sin(t * 4)));
+}
 function drawPupBubble(c, x, y, kind, t) {
   const r = 22 + Math.sin(t * 4) * 1.5;
   c.save(); c.translate(x, y);
@@ -4441,7 +4538,7 @@ function drawPupBubble(c, x, y, kind, t) {
     // Coin Frenzy is a fat money bag, so it reads as "coins" at a glance
     const s2 = 1 + Math.sin(t * 4) * .06, R2 = 30 * s2;
     c.rotate(Math.sin(t * 1.5) * .08);
-    c.shadowColor = '#ffd23f'; c.shadowBlur = 22;
+    goodHalo(c, 0, R2 * .2, R2 * 1.1, t, .7);
     // the sack
     const bag = memoGrad(c, 'moneyBag', () => {
       const g = c.createLinearGradient(0, -R2 * .6, 0, R2);
@@ -4479,12 +4576,13 @@ function drawPupBubble(c, x, y, kind, t) {
     c.globalAlpha = 1;
     c.restore(); return;
   }
-  c.shadowColor = d.col; c.shadowBlur = 18;
-  c.fillStyle = 'rgba(255,255,255,.18)'; c.beginPath(); c.arc(0, 0, r, 0, 7); c.fill();
+  goodHalo(c, 0, 0, r * 1.05, t, .55);
+  glowAt(c, 0, 0, r * 1.5, r * 1.5, d.col, .55);
+  c.fillStyle = 'rgba(255,255,255,.22)'; c.beginPath(); c.arc(0, 0, r, 0, 7); c.fill();
+  c.strokeStyle = '#ffffff'; c.lineWidth = 5; c.globalAlpha = .9; c.stroke(); c.globalAlpha = 1;   // a bright white rim reads as "bonus"
   c.strokeStyle = d.col; c.lineWidth = 3; c.stroke();
-  c.shadowBlur = 0;
-  c.font = '24px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
-  c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(d.ic, 0, 1);
+  const em = emojiSprite(d.ic, 26);
+  c.drawImage(em, -em.width / 4, -em.height / 4 + 1, em.width / 2, em.height / 2);
   c.fillStyle = 'rgba(255,255,255,.7)'; c.beginPath(); c.arc(-r * .4, -r * .45, 4, 0, 7); c.fill();
   c.restore();
 }
@@ -5082,9 +5180,61 @@ function startRun() {
   if (R.headstart > 0) activate('turbo', R.headstart, true);
   if (R.act.shield) toast('🫧 Bubble Start!');
 }
+/* ----- first-swim tips -----
+   The first time each kind of thing swims into view, a little label points at it and the game eases
+   into slow motion for a moment so there is time to read it. Each tip shows once per player. */
+const TIPS = [
+  { id: 'coin', text: 'Coins! Grab them ✨', all: false },
+  { id: 'danger', text: 'Red glow = ouch! Swim around it', all: true },
+  { id: 'pup', text: 'A power-up! Swim into the bubble', all: false },
+  { id: 'cage', text: 'A trapped baby fish! Bump the net to free it', all: false },
+  { id: 'map', text: 'A treasure map piece! Grab it', all: true },
+  { id: 'pulse', text: '', all: false },
+];
+function tipTarget(id) {
+  const ahead = x => { const lx = x - R.cam; return lx > R.fish.x + 120 && lx < R.L * .8; };
+  if (id === 'coin') return R.coins.find(c2 => ahead(c2.x));
+  if (id === 'danger') return R.obs.find(o => o.t in DANGER_SIZE && o.t !== 'trap' && (o.t !== 'shark' || o.state === 'go') && ahead(o.x));
+  if (id === 'pup') return R.pups.find(q => ahead(q.x));
+  if (id === 'cage') return R.obs.find(o => o.t === 'cage' && !o.freed && ahead(o.x));
+  if (id === 'map') return R.obs.find(o => o.t === 'map' && !o.got && ahead(o.x));
+  if (id === 'pulse') return R.pulse > 0 && runDist() > 300 ? true : null;   // once the swim is under way
+  return null;
+}
+function updateTips(dt) {
+  if (R.tip) { R.tip.t -= dt; if (R.tip.t <= 0) { R.tip = null; $('#pulseBtn').classList.remove('tipme'); } return; }
+  if (R.practice || R.rush || R.bossOn || R.dying || R.detour) return;
+  const p = R.p; p.tips = p.tips || [];
+  const fresh = (p.stats.runs || 0) < 8;                 // seasoned swimmers only get the new ones
+  for (const tip of TIPS) {
+    if (p.tips.includes(tip.id) || !(fresh || tip.all)) continue;
+    const o = tipTarget(tip.id); if (!o) continue;
+    p.tips.push(tip.id); save();
+    if (tip.id === 'pulse') { $('#pulseBtn').classList.add('tipme'); R.tip = { t: 4, o: null }; return; }
+    R.tip = { t: 3, o, text: tip.text };
+    R.slowT = 1.1;                                       // a moment of slow motion to read it
+    return;
+  }
+}
+function drawTip(c, flip) {
+  const tp = R.tip; if (!tp || !tp.o) return;
+  const o = tp.o, lx = o.x - R.cam, ly = o.y != null ? o.y : (o.gy != null ? o.gy : R.A / 2);
+  const [x, y] = toScreen(lx, ly);
+  c.save(); c.translate(x, y); if (flip) c.scale(1, -1);
+  c.globalAlpha = Math.min(1, tp.t * 3, (3 - tp.t) * 6);
+  c.font = '700 20px Fredoka, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  const w = c.measureText(tp.text).width + 28, bob = Math.sin(R.t * 6) * 3, by = -62 + bob;
+  const bx = clamp(0, -x + w / 2 + 8, W - x - w / 2 - 8);    // keep the label on screen
+  c.fillStyle = 'rgba(255,255,255,.96)';
+  roundRect(c, bx - w / 2, by - 19, w, 38, 14); c.fill();
+  c.beginPath(); c.moveTo(-9, by + 18); c.lineTo(0, by + 32); c.lineTo(9, by + 18); c.closePath(); c.fill();
+  c.fillStyle = '#0b3a66'; c.fillText(tp.text, bx, by + 1);
+  c.restore();
+}
 function update(dt) {
   if (!R) return;
   if (R.freeze > 0) { R.freeze -= dt; return; }        // hit-stop: everything holds for a beat
+  if (R.slowT > 0) { R.slowT -= dt; dt *= .45; }       // a first-swim tip is on screen
   R.t += dt;
   // visuals ease toward the current zone
   const z = R.zone, k = 1 - Math.pow(.25, dt), lap = lapOf();
@@ -5158,6 +5308,7 @@ function update(dt) {
   if (R.rushEnd > 0) { R.rushEnd -= dt; if (R.rushEnd <= 0 && !R.over) { R.dying = true; R.dieT = .8; } }
   if (!R.bossOn) spawnAhead();
   const fw = R.cam + f.x;
+  if (R.started && !R.daily) updateTips(dt);
   if (R.bossOn) bossUpdate(dt);
   else if (!R.bossDone && R.zone.boss && fw >= zoneStart(R.zoneIdx) + BOSS_IN) startBoss();
   // obstacles
@@ -7308,8 +7459,12 @@ function wallDeco(c, kind, x, y, dir, r1, r2, t, w) {
   c.restore();
 }
 function drawSeabed(c) {
-  const d = lapDark(lapOf());
-  const cols = (SEABED[R.zone.id] || SEABED[TIERS[R.zone.tier].id]).map(h => rgb(mixCol(hexToRgb(h), [2, 3, 8], 1 - d))), L = R.L, A = R.A;
+  const d = lapDark(lapOf()), key = R.zone.id + d;
+  if (drawSeabed.key !== key) {        // the colours only change with the zone and the loop: work them out once
+    drawSeabed.key = key;
+    drawSeabed.cols = (SEABED[R.zone.id] || SEABED[TIERS[R.zone.tier].id]).map(h => rgb(mixCol(hexToRgb(h), [2, 3, 8], 1 - d)));
+  }
+  const cols = drawSeabed.cols, L = R.L, A = R.A;
   const layers = [[.2, .45, 50, cols[1]], [.45, .9, 26, cols[0]]];
   for (const [par, alpha, base, col] of layers) {
     c.fillStyle = col; c.globalAlpha = alpha;
@@ -7728,6 +7883,9 @@ function render() {
     if (o.t === 'gate' || o.t === 'net' || lx < (o.t === 'trap' ? -520 : -120) || lx > R.L + 120) continue;
     if (o.t === 'shark' && o.state !== 'go') continue;
     const [sx, sy] = toScreen(lx, o.y);
+    dangerHalo(c, sx, sy, o);
+    if (o.t === 'cage' && !o.freed) { goodHalo(c, sx, sy, o.r + 4, t, .5); sparkles(c, sx, sy, o.r + 10, t + o.ph); }
+    else if (o.t === 'map' && !o.got) { goodHalo(c, sx, sy, 24, t, .5); sparkles(c, sx, sy, 30, t + o.ph); }
     if (o.t === 'trap') drawTrap(c, o, t);
     else if (o.t === 'rock') drawRock(c, sx, sy, o.r, o.style, o.seed, t, R.glow);
     else if (o.t === 'jelly') drawJelly(c, sx, sy, o.r, t + o.ph, R.glow);
@@ -7773,9 +7931,11 @@ function render() {
     const lx = pu.x - R.cam; if (lx < -30 || lx > R.L + 30) continue;
     const [sx, sy] = toScreen(lx, pu.y + Math.sin(t * 2 + pu.ph) * 8);
     drawPupBubble(c, sx, sy, pu.kind, t);
+    sparkles(c, sx, sy, 30, t + pu.ph);
   }
   for (const tp of R.torps) {
     const [tx, ty] = toScreen(tp.lx, tp.ly);
+    { const ga = c.globalAlpha; c.globalAlpha = .65; c.drawImage(ringSprite(DANGER_COL), tx - 34, ty - 34, 68, 68); c.globalAlpha = ga; }
     if (tp.kind === 'trident') drawTrident(c, tx, ty, R.vert ? Math.PI / 2 - tp.ang : tp.ang, t);
     else if (tp.kind === 'lava') drawLavaBall(c, tx, ty, t);
     else drawTorpedo(c, tx, ty, R.vert ? Math.PI / 2 - tp.ang : tp.ang, t);
@@ -7949,6 +8109,7 @@ function render() {
     c.restore();
   }
   c.globalAlpha = 1;
+  if (R.tip) drawTip(c, flip);
   // deep-water vignette
   const lightPerk = perkOf(R.p, 'light', 0) || (hasPet(R.p, 'jelly') ? 1 : 0);
   const dark = Math.max(0, R.glow - .45) * 1.1 * (lightPerk ? .45 : 1);
@@ -8018,7 +8179,10 @@ function hudTick() {
     : R.zone.name + (lap ? ' · Loop ' + (lap + 1) : ''));
   for (const k of ['magnet', 'turbo', 'mini', 'frenzy']) {
     const el = document.getElementById('ring-' + k);
-    if (el && R.act[k] > 0) el.setAttribute('stroke-dashoffset', (163 * (1 - R.act[k] / (R.actMax[k] || 1))).toFixed(1));
+    if (el && R.act[k] > 0) {
+      const v = (163 * (1 - R.act[k] / (R.actMax[k] || 1))).toFixed(0);   // whole pixels: the ring only changes a few times a second
+      if (hudCache['ring' + k] !== v) { hudCache['ring' + k] = v; el.setAttribute('stroke-dashoffset', v); }
+    }
   }
 }
 function hudPups() {
@@ -8075,10 +8239,10 @@ function drawPreviews(t) {
       c.save(); c.translate(w / 2, h / 2 + Math.sin(t * 3) * 4); c.scale(s, s); drawPet(c, pv.petId, 0, 0, t, 0); c.restore();
       continue;
     }
-    const s = Math.min(w / 80, h / 50) * (pv.big ? .75 : .8);
+    const s = Math.min(w / 80, h / 50) * (pv.big ? .85 : .8);
     const skin = SKINS.find(k => k.id === pv.skinId) || SKINS[0];
     const cos = pv.cos || {};
-    const fxp = w * (hasPet ? .6 : .5), fyp = h / 2 + Math.sin(t * 2) * h * .05;
+    const fxp = w * (hasPet ? .6 : .5), fyp = h * (pv.big ? .56 : .5) + Math.sin(t * 2) * h * .05;   // a little low, so a tall hat fits
     const st = STREAMERS.find(x => x.id === cos.streamer);
     if (st && st.id !== 'none') {
       const pts = [];
@@ -8119,9 +8283,8 @@ $('#players').addEventListener('click', e => {
   if (card) { SFX.click(); SAVE.current = card.dataset.id; save(); renderHub(); }
 });
 
-let newMode = 'new', chosenSpeed = 'normal';
-function renderNew(mode) {
-  newMode = mode;
+let chosenSpeed = 'normal';
+function renderNew() {
   $('#newTitle').textContent = 'New Player';
   $('#pname').value = ''; $('#newErr').textContent = '';
   $('#speeds').innerHTML = SPEED_KEYS.map(k => `<div class="card speed ${k === chosenSpeed ? 'sel' : ''}" data-speed="${k}">
@@ -8135,7 +8298,7 @@ $('#speeds').addEventListener('click', e => {
   chosenSpeed = s.dataset.speed; SFX.click();
   $$('.speed').forEach(x => x.classList.toggle('sel', x.dataset.speed === chosenSpeed));
 });
-$('#newBtn').onclick = () => { SFX.click(); renderNew('new'); };
+$('#newBtn').onclick = () => { SFX.click(); renderNew(); };
 $('#newBack').onclick = () => renderTitle();
 $('#createBtn').onclick = () => {
   const name = ($('#pname').value.trim() || 'Swimmer ' + (SAVE.players.length + 1)).slice(0, 12);
@@ -8144,12 +8307,48 @@ $('#createBtn').onclick = () => {
 };
 $('#pname').addEventListener('keydown', e => { if (e.key === 'Enter') $('#createBtn').click(); });
 
+/* The long goals that carry over between swims, each with a bar to fill. The secret ones only
+   show up once a player has stumbled onto them. */
+function questRows(p) {
+  const row = (ic, name, n, of, hint) => `<div class="quest ${n >= of ? 'done' : ''}"><div class="q"><span>${ic} ${name}</span><b>${n} / ${of}</b></div>
+    <div class="bar"><i style="width:${Math.round(100 * Math.min(1, n / of))}%"></i></div>${hint ? `<div class="small-note">${hint}</div>` : ''}</div>`;
+  let h = row('🗺️', 'Treasure map pieces', p.mapPieces || 0, 3)
+    + row('🐟', 'Babies for Mama', p.babies || 0, MAMA_N);
+  if (p.mermen || (p.bossKinds || []).includes('king')) h += row('🔱', 'Mermen popped', p.mermen || 0, KING_N);
+  const snow = Object.keys(WINTER).filter(k => p.own[k].includes(WINTER[k])).length;
+  if (snow || (p.bossKinds || []).includes('crab')) {
+    const worn = Object.keys(WINTER).filter(k => p[k] === WINTER[k]).length;
+    h += row('❄️', 'Snow gear worn', worn, 3, worn >= 3 ? 'Beat the Fire Crab on loop 2…' : '');
+  }
+  return h;
+}
+// little red flags on the menu when there is something new to look at
+// what can be bought right now, shop tab by shop tab
+function affordable(p) {
+  const c = p.coins, cosIn = kinds => kinds.some(k => COS[k].some(x => !x.secret && x.cost && !p.own[k].includes(x.id) && c >= x.cost));
+  return {
+    up: UPGRADES.some(u => p.up[u.id] < u.max && c >= u.cost[p.up[u.id]]),
+    fish: SKINS.some(x => !p.skins.includes(x.id) && x.cost && c >= x.cost),
+    pet: PETS.some(x => !p.pets.includes(x.id) && x.cost && c >= x.cost) || (!p.pet2Slot && c >= PET2_COST),
+    style: cosIn(['streamer', 'glow', 'tattoo']),
+    swag: cosIn(['hat', 'shades']),
+  };
+}
+const canAffordSomething = p => Object.values(affordable(p)).some(Boolean);
+function hubBadges(p) {
+  const days = p.dailyDays || [], played = days.includes(today());
+  const run = played ? dailyStreak(p) : 0;
+  const db = $('#dailyBadge'); db.textContent = played ? (run > 1 ? '🔥' + run : '') : 'NEW'; db.classList.toggle('gold', played);
+  $('#shopBadge').textContent = canAffordSomething(p) ? '!' : '';
+  $('#trophyBadge').textContent = (p.ach || []).length > (p.achSeen || 0) ? 'NEW' : '';
+  $('#bookBadge').textContent = (p.book || []).length > (p.bookSeen || 0) ? 'NEW' : '';
+}
 function renderHub() {
   const p = P(); if (!p) return renderTitle();
   $('#hubName').textContent = `Hi, ${p.name}!`;
   $('#hubBest').textContent = p.best;
   $('#hubCoins').textContent = p.coins;
-  $('#speedToggle').textContent = `${SPEEDS[p.speed].ic} ${SPEEDS[p.speed].name} · coins ×${SPEEDS[p.speed].coin}`;
+  $('#speedToggle').textContent = `${SPEEDS[p.speed].ic} ${SPEEDS[p.speed].name} speed · coins ×${SPEEDS[p.speed].coin}`;
   $('#missions').innerHTML = p.mt.map((tier, i) => {
     const m = missionOf(i, tier);
     return `<div class="mission"><div class="txt">${esc(m.text(m.target))}</div><div class="rw">+${m.reward} <span class="coin"></span></div></div>`;
@@ -8157,14 +8356,12 @@ function renderHub() {
   $('#stats').innerHTML = `
     <div class="stat">Best distance <b>${p.best} m</b></div>
     <div class="stat">Swims <b>${p.stats.runs}</b></div>
-    <div class="stat">Total distance <b>${p.stats.dist} m</b></div>
     <div class="stat">Coins collected <b>${p.stats.coins}</b></div>
     <div class="stat">Deepest zone <b>${zoneLabel(p.stats.deepest || 0)}</b></div>
     <div class="stat">Trophies <b>${(p.ach || []).length} / ${ACHS.length}</b></div>
-    <div class="stat">Fish rescued <b>${p.stats.rescued || 0}</b></div>
-    <div class="stat">Treasure map <b>${'🗺️'.repeat(p.mapPieces || 0)}${'▫️'.repeat(3 - (p.mapPieces || 0))} ${p.mapPieces || 0} of 3</b></div>
-    <div class="stat">Babies for Mama <b>${p.babies || 0} of ${MAMA_N} 🐟</b></div>`
-    + ((p.mermen || (p.bossKinds || []).includes('king')) ? `<div class="stat">Mermen popped <b>${p.mermen || 0} of ${KING_N} 🔱</b></div>` : '');
+    <div class="stat">Fish rescued <b>${p.stats.rescued || 0}</b></div>`;
+  $('#quests').innerHTML = questRows(p);
+  hubBadges(p);
   previews.length = 0;
   fishPreview($('#hubFish'), p.skin, p.pet, true, cosSet(p));
   const sk = SKINS.find(x => x.id === p.skin) || SKINS[0], pet = PETS.find(x => x.id === p.pet) || PETS[0];
@@ -8402,6 +8599,7 @@ function bookScan() {
 function renderBook() {
   const p = P(); if (!p) return renderTitle();
   const got = p.book || [];
+  p.bookSeen = got.length; save();
   $('#bookCount').textContent = `${got.length} of ${BOOK.length} sea friends found — tap one to read about it`;
   $('#bookGrid').innerHTML = BOOK.map(b => {
     const has = got.includes(b.id);
@@ -8414,6 +8612,7 @@ function renderBook() {
 function renderTrophies() {
   const p = P(); if (!p) return renderTitle();
   const got = p.ach || [];
+  p.achSeen = got.length; save();
   $('#trophyCount').textContent = `${got.length} of ${ACHS.length} found`;
   $('#trophyGrid').innerHTML = ACHS.map(a => {
     const has = got.includes(a.id);
@@ -8458,6 +8657,8 @@ function renderShop() {
   const p = P();
   $('#shopCoins').textContent = p.coins;
   $$('.tab').forEach(b => b.classList.toggle('sel', b.dataset.tab === shopTab));
+  const af = affordable(p);
+  $$('.tab .badge').forEach(bd => { bd.textContent = af[bd.dataset.tb] && bd.dataset.tb !== shopTab ? '!' : ''; });
   const grid = $('#shopGrid');
   grid.classList.remove('stack');
   previews.length = 0;
@@ -8564,7 +8765,7 @@ $('#trophyBack').onclick = () => renderHub();
 $('#dailyBtn').onclick = () => { SFX.click(); renderDaily(); };
 $('#dailyBack').onclick = () => renderHub();
 $('#dailyPlay').onclick = () => { SFX.click(); startGame({ daily: true }); };
-$('#shopBack').onclick = () => renderHub();
+$('#shopBack').onclick = $('#shopBackTop').onclick = () => { SFX.click(); renderHub(); };
 $('#clamOk').onclick = () => { $('#clamReveal').classList.remove('on'); SFX.click(); renderShop(); };
 
 /* ----- game flow ----- */
