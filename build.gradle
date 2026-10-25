@@ -1,3 +1,43 @@
 plugins {
-    id 'com.android.application' version '8.5.2' apply false
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.jsnyder.finndash'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.jsnyder.finndash"
+        minSdk 24           // Fire HD tablets from about 2017 onward
+        targetSdk 34
+        // Every cloud build gets a higher version code than the last, so a new APK
+        // always installs over the old one without touching this file.
+        versionCode 100 + (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInteger()
+        versionName "4.1.1"
+    }
+
+    signingConfigs {
+        family {
+            storeFile file(FD_STORE_FILE)
+            storePassword FD_STORE_PASSWORD
+            keyAlias FD_KEY_ALIAS
+            keyPassword FD_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.family
+        }
+        debug {
+            signingConfig signingConfigs.family
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
