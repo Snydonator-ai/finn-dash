@@ -1462,8 +1462,8 @@ const SFX = {
   ping() { tone(1320, .18, 'sine', .06); tone(1980, .22, 'sine', .04, .06); },
   bossHit() { tone(320, .18, 'square', .09, 0, 240); tone(880, .22, 'triangle', .07, .04); tone(1320, .2, 'triangle', .05, .1); },
   spear() { tone(700, .18, 'sawtooth', .05, 0, 300); },
-  ghost() { tone(330, .9, 'sine', .045, 0, -60); tone(392, .9, 'triangle', .03, .25, -80); tone(262, 1.2, 'sine', .04, .55, -50); },
-  lob() { tone(460, .2, 'triangle', .03, 0, -220); },
+  ghost() { tone(330, .9, 'sine', .045, 0, 270); tone(392, .9, 'triangle', .03, .25, 312); tone(262, 1.2, 'sine', .04, .55, 212); },   // a spooky downward wail
+  lob() { tone(460, .2, 'triangle', .03, 0, 240); },
   rune() { tone(1318, .12, 'sine', .03); tone(1760, .16, 'sine', .025, .07); },
   growl() { tone(70, .7, 'sawtooth', .07, 0, 50); tone(110, .5, 'square', .03, .05, 70); },
   laser() { tone(1400, .3, 'sawtooth', .05, 0, 500); tone(700, .3, 'square', .035, .02, 250); },
@@ -3356,7 +3356,6 @@ function drawMama(c, x, y, m, t) {
 // The chest at the heart of the wreck
 function drawChest(c, x, y, ch, t) {
   c.save(); c.translate(x, y);
-  const open = ch.open ? Math.min(1, (ch.open += 0) ) : 0;
   const lift = ch.open ? -1.1 : 0;
   if (!ch.open) {
     c.save(); c.globalCompositeOperation = 'lighter';
@@ -4248,15 +4247,14 @@ function drawLantern(c, t, B) {
   if (PORTRAIT) { c.translate(bx, by); c.scale(BS(), BS()); c.translate(-bx, -by); }
   // body
   const g = memoGrad(c, 'lanternBody', () => { const gg = c.createRadialGradient(-40, -30, 12, 0, 0, 240); gg.addColorStop(0, '#2b3350'); gg.addColorStop(1, '#070b16'); return gg; });
-  c.fillStyle = g; c.shadowColor = '#ffd23f'; c.shadowBlur = 26 * lit;
+  c.fillStyle = g;
   c.beginPath();
   c.moveTo(bx + 210, by + 10);
   c.quadraticCurveTo(bx + 60, by - 130, bx - 120, by - 60);
   c.quadraticCurveTo(bx - 200, by - 10, bx - 120, by + 80);
   c.quadraticCurveTo(bx + 60, by + 140, bx + 210, by + 10);
   // the path is already placed; shifting only the gradient (fill style space) to the body
-  c.closePath(); c.save(); c.translate(bx, by); c.fill(); c.restore();
-  c.shadowBlur = 0;
+  c.closePath(); softGlow(c, '#ffd23f', 44 * lit); c.save(); c.translate(bx, by); c.fill(); c.restore();
   // tail
   c.fillStyle = '#131a2c';
   c.beginPath(); c.moveTo(bx + 190, by + 4); c.lineTo(bx + 280, by - 60 + Math.sin(t * 2) * 14); c.lineTo(bx + 286, by + 74 + Math.sin(t * 2) * 14); c.closePath(); c.fill();
@@ -4296,6 +4294,16 @@ function drawLantern(c, t, B) {
 // scenery and before the attacks, so the scenery vanishes but every attack stays
 // visible — spooky, never unfair.
 let darkCv = null;
+// a soft round hole (opaque in the middle, fading out), cut out of the darkness wherever there is light
+let holeCv = null;
+function holeSprite() {
+  if (holeCv) return holeCv;
+  holeCv = document.createElement('canvas'); holeCv.width = holeCv.height = 128;
+  const g = holeCv.getContext('2d'), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(.6, 'rgba(0,0,0,.6)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  return holeCv;
+}
 function drawDarkness(c, depth, rgb, holes, blotch) {
   const pw = Math.ceil(W / 2), ph = Math.ceil(H / 2);        // half resolution: it is all soft edges
   if (!darkCv || darkCv.width !== pw || darkCv.height !== ph) { darkCv = document.createElement('canvas'); darkCv.width = pw; darkCv.height = ph; }
@@ -4313,11 +4321,9 @@ function drawDarkness(c, depth, rgb, holes, blotch) {
     }
   }
   d.globalCompositeOperation = 'destination-out';
-  for (const [x, y, r, a] of holes) {
-    const g = d.createRadialGradient(x / 2, y / 2, 0, x / 2, y / 2, r / 2);
-    g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(.6, `rgba(0,0,0,${a * .6})`); g.addColorStop(1, 'rgba(0,0,0,0)');
-    d.fillStyle = g; d.beginPath(); d.arc(x / 2, y / 2, r / 2, 0, 7); d.fill();
-  }
+  const hs = holeSprite();
+  for (const [x, y, r, a] of holes) { d.globalAlpha = a; d.drawImage(hs, x / 2 - r / 2, y / 2 - r / 2, r, r); }
+  d.globalAlpha = 1;
   c.drawImage(darkCv, 0, 0, W, H);
 }
 // The Lantern Fish's arena is pitch dark apart from the lights. Drawn after the
@@ -4344,8 +4350,9 @@ function drawBossDeath(c, B, t) {
     // after the burst: a fading ring of light
     const r2 = 60 + (B.deadT - 1.1) * 700;
     c.save(); c.globalAlpha = Math.max(0, 1 - (B.deadT - 1.1) / 1.1);
-    c.strokeStyle = '#fff6c8'; c.lineWidth = 10; c.shadowColor = B.def.col; c.shadowBlur = 30;
-    c.beginPath(); c.arc(ax, ay, r2, 0, 7); c.stroke();
+    c.beginPath(); c.arc(ax, ay, r2, 0, 7);
+    c.strokeStyle = B.def.col; c.lineWidth = 40; c.globalAlpha *= .3; c.stroke(); c.globalAlpha /= .3;
+    c.strokeStyle = '#fff6c8'; c.lineWidth = 10; c.stroke();
     c.restore();
     return;
   }
@@ -4436,14 +4443,13 @@ function drawTentacle(c, h, t) {
   const wob = Math.sin(t * 9) * 6;
   const gr = c.createLinearGradient(0, -thick / 2, 0, thick / 2);
   gr.addColorStop(0, '#4a1f78'); gr.addColorStop(.5, '#a457ff'); gr.addColorStop(1, '#3a1660');
-  c.fillStyle = gr; c.shadowColor = '#c78bff'; c.shadowBlur = 24;
+  c.fillStyle = gr;
   c.beginPath();
   c.moveTo(0, -thick / 2);
   c.bezierCurveTo(len * .4, -thick / 2 + wob, len * .8, -thick * .32 - wob, len, -thick * .12);
   c.quadraticCurveTo(len + thick * .35, 0, len, thick * .12);          // rounded, curling tip
   c.bezierCurveTo(len * .8, thick * .32 - wob, len * .4, thick / 2 + wob, 0, thick / 2);
-  c.closePath(); c.fill();
-  c.shadowBlur = 0;
+  c.closePath(); softGlow(c, '#c78bff', 40); c.fill();
   // suckers along the underside, shrinking toward the tip
   c.fillStyle = 'rgba(255,215,255,.6)';
   for (let a = 22; a < len - 18; a += 34) {
@@ -4463,13 +4469,12 @@ function drawGeyser(c, h, t) {
     gg.addColorStop(.7, '#ff8a2a'); gg.addColorStop(1, 'rgba(200,40,10,.9)'); return gg;
   });
   c.save(); c.translate(h.x, 0);
-  c.fillStyle = g; c.shadowColor = '#ff6a1a'; c.shadowBlur = 26;
+  c.fillStyle = g;
   // a wobbling column, wider at the base
   c.beginPath(); c.moveTo(-8, H + 10);
   for (let y = H; y >= top; y -= 30) { const wob = Math.sin(y * .05 + t * 18) * 5; c.lineTo(wob + (y - top) / H * -6, y); }
   for (let y = top; y <= H; y += 30) { const wob = Math.sin(y * .05 + t * 18 + 2) * 5; c.lineTo(h.w + wob + (y - top) / H * 6, y); }
-  c.lineTo(h.w + 8, H + 10); c.closePath(); c.fill();
-  c.shadowBlur = 0;
+  c.lineTo(h.w + 8, H + 10); c.closePath(); softGlow(c, '#ff6a1a', 44); c.fill();
   // spray at the top and blobs flying out
   c.fillStyle = '#ffd36b';
   for (let i = 0; i < 5; i++) {
@@ -4478,6 +4483,15 @@ function drawGeyser(c, h, t) {
   }
   c.restore();
   c.globalAlpha = 1;
+}
+/* A cheap stand-in for shadowBlur on big shapes: the current path is stroked wide and faint in the
+   glow colour underneath the fill. A blur on a shape this size is costly on a phone GPU (and crawls
+   on software canvases); this is two strokes. Call it after building the path, before the fill. */
+function softGlow(c, col, w) {
+  c.save(); c.strokeStyle = col; c.lineJoin = 'round';
+  c.globalAlpha *= .16; c.lineWidth = w; c.stroke();
+  c.lineWidth = w * .5; c.stroke();
+  c.restore();
 }
 function drawHazard(c, h, t, type) {
   if (h.style === 'geyser' && h.t < h.tele - .8) return;     // the second wave warns only when it is next
@@ -4530,9 +4544,8 @@ function drawHazard(c, h, t, type) {
       const warmA = 'rgba(255,196,60,.92)', warmB = 'rgba(255,240,180,.92)';
       g.addColorStop(0, h.openEnd === 'top' ? warmB : warmA);
       g.addColorStop(1, h.openEnd === 'top' ? warmA : warmB);
-      c.fillStyle = g; c.shadowColor = '#ffd23f'; c.shadowBlur = 30;
-      c.fillRect(h.x, h.y, h.w, h.h);
-      c.shadowBlur = 0;
+      c.beginPath(); c.rect(h.x, h.y, h.w, h.h); softGlow(c, '#ffd23f', 50);
+      c.fillStyle = g; c.fill();
       // streaks along the beam so it reads as light, not a wall
       c.strokeStyle = 'rgba(255,255,255,.45)'; c.lineWidth = 2;
       for (let i = 0; i < h.w; i += 54) {
@@ -4542,9 +4555,8 @@ function drawHazard(c, h, t, type) {
     } else if (h.style === 'claw') {
       const g = h.vertical ? c.createLinearGradient(h.x, 0, h.x + h.w, 0) : c.createLinearGradient(0, h.y, 0, h.y + h.h);
       g.addColorStop(0, '#a8341a'); g.addColorStop(.5, '#ff8f5a'); g.addColorStop(1, '#a8341a');
-      c.fillStyle = g; c.shadowColor = '#ff8a3d'; c.shadowBlur = 24;
-      roundRect(c, h.x, h.y, h.w, h.h, 18); c.fill();
-      c.shadowBlur = 0;
+      roundRect(c, h.x, h.y, h.w, h.h, 18); softGlow(c, '#ff8a3d', 40);
+      c.fillStyle = g; c.fill();
       // serrated pincer edge along the open side
       c.fillStyle = '#ffb08a';
       const teeth = 26;
@@ -4566,12 +4578,12 @@ function drawHazard(c, h, t, type) {
       c.globalAlpha = fade;
       const vert2 = !!h.vertical, thick = (vert2 ? h.w : h.h) * k2;
       const cx = h.x + h.w / 2, cy = h.y + h.h / 2;
-      c.fillStyle = 'rgba(124,255,107,.35)'; c.shadowColor = '#7cff6b'; c.shadowBlur = 26;
-      if (vert2) c.fillRect(cx - thick / 2, h.y, thick, h.h); else c.fillRect(h.x, cy - thick / 2, h.w, thick);
+      c.beginPath(); if (vert2) c.rect(cx - thick / 2, h.y, thick, h.h); else c.rect(h.x, cy - thick / 2, h.w, thick);
+      softGlow(c, '#7cff6b', 44); c.fillStyle = 'rgba(124,255,107,.35)'; c.fill();
       c.fillStyle = 'rgba(240,255,235,.95)';
       const core = thick * (.32 + .1 * Math.sin(t * 40));
       if (vert2) c.fillRect(cx - core / 2, h.y, core, h.h); else c.fillRect(h.x, cy - core / 2, h.w, core);
-      c.shadowBlur = 0; c.globalAlpha = 1;
+      c.globalAlpha = 1;
     } else if (h.style === 'geyser') {
       drawGeyser(c, h, t);
     } else if (h.grow) {
@@ -4580,9 +4592,8 @@ function drawHazard(c, h, t, type) {
       const along = h.vertical ? h.h : h.w;
       const g = h.vertical ? c.createLinearGradient(h.x, 0, h.x + h.w, 0) : c.createLinearGradient(0, h.y, 0, h.y + h.h);
       g.addColorStop(0, '#5b2a8f'); g.addColorStop(.5, '#a457ff'); g.addColorStop(1, '#5b2a8f');
-      c.fillStyle = g; c.shadowColor = '#c78bff'; c.shadowBlur = 26;
-      roundRect(c, h.x, h.y, h.w, h.h, 26); c.fill();
-      c.shadowBlur = 0;
+      roundRect(c, h.x, h.y, h.w, h.h, 26); softGlow(c, '#c78bff', 44);
+      c.fillStyle = g; c.fill();
       // suckers
       c.fillStyle = 'rgba(255,220,255,.5)';
       for (let i = 0; i < along / 46; i++) {
@@ -4801,9 +4812,10 @@ function drawHazard(c, h, t, type) {
       c.fillStyle = `rgba(255,70,90,${.15 * warn})`; c.beginPath(); c.arc(h.x, h.y, 46, 0, 7); c.fill();
     } else {
       const rc = h.style === 'light' ? '#ffd23f' : '#7fe8ff';
-      c.strokeStyle = rc; c.lineWidth = h.th; c.shadowColor = rc; c.shadowBlur = 20; c.globalAlpha = .75;
-      c.beginPath(); c.arc(h.x, h.y, h.r, a0, a1); c.stroke();
-      c.globalAlpha = 1; c.shadowBlur = 0;
+      c.strokeStyle = rc; c.beginPath(); c.arc(h.x, h.y, h.r, a0, a1);
+      c.globalAlpha = .18; c.lineWidth = h.th + 30; c.stroke();          // the soft glow round it
+      c.globalAlpha = .75; c.lineWidth = h.th; c.stroke();
+      c.globalAlpha = 1;
       c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 3;
       c.beginPath(); c.arc(h.x, h.y, h.r, a0, a1); c.stroke();
     }
@@ -6182,7 +6194,6 @@ function openChest() {
   setTimeout(() => toast(msg), 700);
 }
 function switchZone() {
-  const oldA = R.A;
   const wy = wallAt(R.cam + R.fish.x);          // leaving a dive: lane -> screen needs this
   const wasVert = R.vert, wasFlip = FLIP();
   R.zoneIdx++;
@@ -6271,7 +6282,8 @@ function dailyFinish() {
     R.coinsRun += streak * STREAK_COIN;
     setTimeout(() => { if (R && !R.over) toast(`🔥 ${streak}-day streak! +${streak * STREAK_COIN}`); }, 900);
   }
-  setTimeout(() => { if (R && !R.over) { R.dying = true; R.dieT = .8; } }, 1400);
+  const run = R;     // only ever end THIS swim (a quick quit and restart must not be ended by it)
+  setTimeout(() => { if (R === run && !R.over) { R.dying = true; R.dieT = .8; } }, 1400);
 }
 const fmtTime = s2 => `${Math.floor(s2 / 60)}:${String(Math.floor(s2 % 60)).padStart(2, '0')}`;
 function gameOver() {
@@ -7398,7 +7410,6 @@ const BIG_S = () => PORTRAIT ? .74 : 1;
 const BIG_Y = () => H - 92 * BIG_S();                     // where his feet stand on the snow
 // Bigfoot lumbers along the ridge, thumps his chest, and has to catch his breath afterwards
 function bigfootUpdate(B, dt) {
-  const f = R.fish;
   B.bt -= dt;
   if (B.bstate === 'walk') {
     B.bx += B.bdir * (B.phase2 ? 95 : 70) * dt;
@@ -10082,7 +10093,7 @@ const HOME_DECO = [
   { id: 'statue', name: 'Golden Finn Statue', cost: 2000, desc: 'The hero of the ocean, in gold.', x: 615, y: 470, w: 70, h: 120 },
 ];
 const HOME_REWARD_ACHS = ['chest', 'mama', 'king', 'bottle', 'starfall', 'hermy'];
-function homeOf(p) { p.home = p.home && typeof p.home === 'object' ? p.home : {}; p.home.lvl = clamp(p.home.lvl | 0, 0, HOME_LVLS.length - 1); p.home.deco = Array.isArray(p.home.deco) ? p.home.deco : []; return p.home; }
+function homeOf(p) { p.home = p.home && typeof p.home === 'object' ? p.home : {}; p.home.lvl = clamp(p.home.lvl | 0, 0, HOME_LVLS.length - 1); p.home.deco = Array.isArray(p.home.deco) ? p.home.deco.filter(id => HOME_DECO.some(d => d.id === id)) : []; return p.home; }
 const homeHas = (p, d) => d.ach ? (p.ach || []).includes(d.ach) : homeOf(p).deco.includes(d.id);
 // finished quests: the running count, or the quest trophies for anyone who finished some before it was kept
 const questsFinished = p => Math.max(p.questsDone || 0, HOME_REWARD_ACHS.filter(a => (p.ach || []).includes(a)).length);
@@ -10797,7 +10808,7 @@ function holidayHomeDeco(c, t) {
     for (let i = 0; i < 12; i++) { const col = ['#ff4d6a', '#ffd23f', '#5ab8ff', '#fff'][i % 4], x = Math.sin(i * 2.4) * (38 - i * 2.6), y = -12 - i * 11; if (Math.sin(t * 3 + i) > -.4) glowAt(c, x, y, 8, 8, col, .8); c.fillStyle = col; c.beginPath(); c.arc(x, y, 3, 0, 7); c.fill(); }
     c.save(); c.translate(0, -158); c.scale(1.3, 1.3); drawTrinket(c, 0, 0, 'star', t, 0); c.restore();
     c.restore();
-    for (const [x, col] of [[100, '#5ab8ff'], [182, '#e8413a']]) { c.save(); c.translate(x, 470); c.scale(1.1, 1.1); drawHolItem(c, 'present', 0); c.restore(); }
+    for (const x of [100, 182]) { c.save(); c.translate(x, 470); c.scale(1.1, 1.1); drawHolItem(c, 'present', 0); c.restore(); }
   } else if (h.id === 'halloween') {
     for (const [x, s] of [[150, 1.6], [330, 1.2], [640, 1.4], [860, 1.1]]) {
       c.save(); c.translate(x, 478); c.scale(s, s);
@@ -10931,271 +10942,6 @@ function drawSetPiece(c, t) {
   }
   c.restore();
 }
-/* ===== 90-flow.js: Starting, pausing and ending swims, input, and boot (keep this file last) ===== */
-/* ----- game flow ----- */
-async function goFullscreen() {
-  if (!isTouch()) return;
-  try {
-    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-      await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
-    }
-    if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
-  } catch (e) { /* the browser said no; the game still plays windowed */ }
-  try {
-    if (navigator.wakeLock && !wakeLock) {
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => { wakeLock = null; });
-    }
-  } catch (e) {}
-}
-let wakeLock = null;
-document.addEventListener('visibilitychange', async () => {
-  if (document.visibilityState === 'visible' && wakeLock === null && isTouch()) {
-    try {
-      if (navigator.wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); }
-    } catch (e) {}
-  }
-});
-let lastOpts;
-function startGame(opts) {
-  lastOpts = opts;
-  closeOv();
-  document.body.classList.remove('photomode'); $('#photoBar').classList.remove('on');
-  musicDuck(false);
-  goFullscreen();
-  show('game');
-  resize();                      // the view width depends on the screen, so fix it before the run is built
-  $('#bossHud').classList.remove('on');
-  newRun(opts);
-  $('#hZone').textContent = R.zone.name;
-  const sh = $('#startHint');
-  sh.style.display = 'block';
-  sh.innerHTML = isTouch() ? '👆 Drag anywhere to swim!<br><small>Tap 💥 for a Sonic Pulse</small>' : '⌨️ Use the arrow keys (or drag) to swim!<br><small>Press SPACE for a Sonic Pulse</small>';
-  zoneBanner(R.zone.name, R.practice ? 'Boss practice — good luck!' : 'Dodge the obstacles, grab the coins!');
-  hudTick();
-  musicSync();                       // now that the run exists, play its area's theme
-}
-$('#goAgain').onclick = () => { SFX.click(); startGame(lastOpts); };
-$('#goHub').onclick = () => { closeOv(); R = null; renderHub(); };
-$('#goShop').onclick = () => { closeOv(); R = null; renderShop(); };
-$('#ddHub').onclick = () => { closeOv(); R = null; renderHub(); };
-$('#ddBoard').onclick = () => { closeOv(); R = null; renderDaily(); };
-$('#ddAgain').onclick = () => { SFX.click(); startGame({ daily: true }); };
-$('#rdHub').onclick = () => { closeOv(); R = null; renderHub(); };
-$('#rdAgain').onclick = () => { SFX.click(); startGame({ rush: true, zoneIdx: RUSH_ZONES[0] }); };
-/* Photo mode: freeze the moment, clear the screen of buttons, and save a picture. */
-function photoMode(on) {
-  if (!R) return;
-  R.photo = on;
-  document.body.classList.toggle('photomode', on);
-  $('#photoBar').classList.toggle('on', on);
-  if (on) { closeOv(); }                 // the run stays paused underneath
-  else { openOv('pause'); }
-}
-let photoZoom = false;
-function takePhoto() {
-  const cv = $('#cv');
-  const out = document.createElement('canvas');
-  out.width = cv.width; out.height = cv.height;
-  const c = out.getContext('2d');
-  if (photoZoom) {
-    // a close-up: crop a window around Finn (in canvas pixels) and blow it up to full size
-    const k = cv.width / W, f = R.fish;
-    const [sx, sy0] = toScreen(f.x, f.y);
-    const sy = FLIP() ? H - sy0 : sy0;
-    const cw = cv.width / 2.1, ch = cv.height / 2.1;
-    const x0 = clamp(sx * k - cw / 2, 0, cv.width - cw), y0 = clamp(sy * k - ch / 2, 0, cv.height - ch);
-    c.drawImage(cv, x0, y0, cw, ch, 0, 0, out.width, out.height);
-  } else c.drawImage(cv, 0, 0);
-  const s2 = out.width / 1280;           // scale the trim with the picture
-  // a rounded frame and a little caption, so it looks like a photo and not a screenshot
-  c.save();
-  c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 10 * s2;
-  roundRect(c, 14 * s2, 14 * s2, out.width - 28 * s2, out.height - 28 * s2, 22 * s2); c.stroke();
-  const p = R.p, cap = `${p.name} · ${R.rush ? 'Boss Rush' : R.daily ? 'Daily Challenge' : R.zone.name}`;
-  c.font = `700 ${Math.round(30 * s2)}px Fredoka, sans-serif`;
-  const w = c.measureText(cap).width + 34 * s2, bx = out.width / 2 - w / 2, by = out.height - 74 * s2;
-  c.fillStyle = 'rgba(6,36,71,.78)';
-  roundRect(c, bx, by, w, 46 * s2, 14 * s2); c.fill();
-  c.fillStyle = '#f2fbff'; c.textAlign = 'center'; c.textBaseline = 'middle';
-  c.fillText(cap, out.width / 2, by + 24 * s2);
-  c.font = `700 ${Math.round(20 * s2)}px Fredoka, sans-serif`;
-  c.fillStyle = 'rgba(255,255,255,.75)';
-  c.fillText('Finn Dash', out.width / 2, 46 * s2);
-  c.restore();
-  const fl = $('#flashFrame'); fl.classList.remove('snap'); void fl.offsetWidth; fl.classList.add('snap');
-  SFX.shutter(); buzz(20);
-  out.toBlob(bl => {
-    if (!bl) { toast('Could not save the picture'); return; }
-    const url = URL.createObjectURL(bl), a = document.createElement('a');
-    a.href = url; a.download = `finn-dash-${Date.now()}.png`;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 8000);
-    toast('📷 Photo saved!');
-  }, 'image/png');
-}
-function pause() { if (R && R.started && !R.dying && !R.over && !R.paused) { R.paused = true; renderPauseInfo(); openOv('pause'); musicDuck(true); } }
-$('#pauseBtn').onclick = pause;
-$('#pulseBtn').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); firePulse(); });
-$('#pResume').onclick = () => { closeOv(); if (R) { R.paused = false; R.pendingDrag = [0, 0]; R.mouseT = null; } musicDuck(false); };
-$('#pQuit').onclick = () => { closeOv(); musicDuck(false); if (R) { R.paused = false; R.dying = true; R.dieT = .01; } };
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) pause();
-  if (AC) { try { document.hidden ? AC.suspend() : AC.resume(); } catch (e) {} }
-});
-/* A short buzz on phones and tablets. Off on anything without a vibration motor. */
-const CAN_BUZZ = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
-function buzz(ms) {
-  if (!CAN_BUZZ || SAVE.rumble === false) return;
-  try { navigator.vibrate(ms); } catch (e) {}
-}
-function setRumble(v) {
-  SAVE.rumble = v; save();
-  $('#pRumble').textContent = 'Rumble: ' + (v ? 'On' : 'Off');
-}
-function setMuted(v) {
-  SAVE.muted = v; save();
-  $('#muteBtn').textContent = v ? '🔇' : '🔊';
-  $('#pSound').textContent = 'Sound: ' + (v ? 'Off' : 'On');
-  musicVolumeChanged();
-  if (!v) musicSync();
-}
-function setMusic(v) {
-  MUS.on = v; SAVE.music = v; save();
-  $('#pMusic').textContent = 'Music: ' + (v ? 'On' : 'Off');
-  musicVolumeChanged();
-  if (v) musicSync();
-}
-$('#muteBtn').onclick = () => setMuted(!SAVE.muted);
-$('#pSound').onclick = () => setMuted(!SAVE.muted);
-$('#pMusic').onclick = () => setMusic(!MUS.on);
-$('#pPhoto').onclick = () => { SFX.click(); photoMode(true); };
-$('#phShot').onclick = () => takePhoto();
-$('#phZoom').onclick = () => { photoZoom = !photoZoom; $('#phZoom').textContent = photoZoom ? '🔍 Close-up' : '🔭 Wide shot'; SFX.click(); };
-$('#phDone').onclick = () => { SFX.click(); photoMode(false); };
-$('#pRumble').onclick = () => { setRumble(SAVE.rumble === false); SFX.click(); buzz(30); };
-$('#gfxBtn').onclick = () => { const order = ['auto', 'full', 'balanced', 'lite']; applyGfxMode(order[(order.indexOf(GFX.mode) + 1) % 4]); SFX.click(); };
-
-/* =================================================================
-   INPUT
-   ================================================================= */
-document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
-  if (!R || !$('#game').classList.contains('on')) return;
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
-  if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
-    if (R.paused) $('#pResume').click(); else pause();
-    return;
-  }
-  if (e.key === 'Enter' || e.key === ' ') {
-    for (const [ov, btn] of [['over', 'goAgain'], ['dailydone', 'ddAgain'], ['rushdone', 'rdAgain']])
-      if ($('#ov-' + ov).classList.contains('on')) { $('#' + btn).click(); return; }
-  }
-  if (e.key === ' ') { if (!e.repeat) firePulse(); return; }
-  keys[keyName(e)] = true;
-});
-// letters are stored lower-case, so "a" pressed and "A" released is still the same key
-const keyName = e => e.key.length === 1 ? e.key.toLowerCase() : e.key;
-document.addEventListener('keyup', e => { keys[keyName(e)] = false; });
-window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
-let drag = null;
-const gameEl = $('#game');
-gameEl.addEventListener('pointerdown', e => {
-  if (e.target.closest('button')) return;
-  drag = { id: e.pointerId, x: e.clientX, y: e.clientY, mouse: e.pointerType === 'mouse' };
-  if (drag.mouse) setMouseTarget(e);
-  // keep receiving this pointer even if it is released over an overlay
-  try { gameEl.setPointerCapture(e.pointerId); } catch (_) {}
-  if (e.pointerType === 'touch') document.body.classList.add('touch');
-});
-gameEl.addEventListener('pointermove', e => {
-  if (!drag || e.pointerId !== drag.id || !R) return;
-  if (e.pointerType === 'mouse' && !(e.buttons & 1)) { drag = null; if (R) R.mouseT = null; return; }   // button already up
-  // with a mouse, Finn swims to wherever the pointer is, so the edge of the window
-  // can never stop him reaching the bottom of the screen
-  if (drag.mouse) { if (!R.paused && !R.dying && !R.over) setMouseTarget(e); return; }
-  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-  drag.x = e.clientX; drag.y = e.clientY;
-  if (R.paused || R.dying || R.over) return;            // don't bank movement for later
-  const k = 1.15 / SCALE;
-  R.pendingDrag[0] += dx * k; R.pendingDrag[1] += dy * k;
-});
-['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => gameEl.addEventListener(t, e => { if (drag && e.pointerId === drag.id) { drag = null; if (R) R.mouseT = null; } }));
-function setMouseTarget(e) {
-  if (!R) return;
-  const r = cv.getBoundingClientRect();
-  R.mouseT = [(e.clientX - r.left) / SCALE, (e.clientY - r.top) / SCALE];
-}
-// Landscape only: if a phone is held upright, ask for a turn (and pause, so nobody
-// loses a run while the screen is sideways).
-function checkOrient() {
-  const on = false;                    // portrait is supported now, so no need to ask for a turn
-  $('#rotate').classList.toggle('on', on);
-  if (on && R && R.started && !R.paused && $('#game').classList.contains('on')) pause();
-}
-function relayout() { checkOrient(); resize(); }
-window.addEventListener('resize', relayout);
-window.addEventListener('orientationchange', () => setTimeout(relayout, 140));
-
-/* =================================================================
-   BOOT
-   ================================================================= */
-let lastT = 0;
-let prevT = 0;
-function frame(ts) {
-  requestAnimationFrame(frame);          // first, so one bad frame can never freeze the game
-  const dtMs = ts - lastT, dt = Math.min(.05, dtMs / 1000 || 0); lastT = ts;
-  const inGame = R && gameEl.classList.contains('on');
-  if (inGame) {
-    update(dt); render();
-    if (R && R.started && !R.paused && !R.over) gfxWatch(dtMs);
-  }
-  // menu fish previews only need ~20fps
-  if (!inGame && ts - prevT > 40) { prevT = ts; drawPreviews(ts / 1000); homeTick(ts / 1000); titleTick(ts / 1000); }
-}
-function bubblesBg() {
-  const box = $('#bgBubbles');
-  let h = '';
-  for (let i = 0; i < 18; i++) { const s = rand(8, 28); h += `<i style="left:${rand(0, 100)}%;width:${s}px;height:${s}px;animation-duration:${rand(9, 20)}s;animation-delay:-${rand(0, 20)}s"></i>`; }
-  box.innerHTML = h;
-}
-if (('ontouchstart' in window) || (window.matchMedia && matchMedia('(pointer:coarse)').matches)) document.body.classList.add('touch');
-load();
-holidayApply();
-setMuted(!!SAVE.muted);
-setRumble(SAVE.rumble !== false);
-if (!CAN_BUZZ) $('#pRumble').style.display = 'none';
-setMusic(SAVE.music !== false);
-// browsers only allow sound after a gesture, so the menu theme starts on the first one
-// iPhones mute Web Audio when the ring/silent switch is set to silent. Playing a silent looping
-// clip from a real <audio> element switches the phone into "playback" mode, so the game is heard.
-let silentEl = null;
-function iosUnmute() {
-  if (silentEl) { silentEl.play().catch(() => {}); return; }
-  try {
-    silentEl = document.createElement('audio');
-    silentEl.setAttribute('playsinline', ''); silentEl.loop = true; silentEl.volume = .01;
-    // ~0.1s of silence (a tiny WAV)
-    silentEl.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA';
-    silentEl.play().catch(() => {});
-  } catch (e) {}
-}
-['pointerdown', 'keydown'].forEach(ev => window.addEventListener(ev, function once() {
-  window.removeEventListener(ev, once);
-  iosUnmute();
-  audio();                                     // resumes a context created before any gesture
-  musicSync();
-}, { once: true }));
-document.addEventListener('visibilitychange', () => { if (!document.hidden && silentEl) silentEl.play().catch(() => {}); });
-applyGfxMode(SAVE.gfx || 'auto');
-bubblesBg();
-fishPreview($('#titleFish'), 'finn', 'none', true);
-if (P()) renderHub(); else renderTitle();
-resize();       // fills in the --sa* safe-area vars before anything is shown
-checkOrient();
-requestAnimationFrame(frame);
-
-window.__fd = { laneA: x => laneA(x), wallAt: x => wallAt(x), scrollSpeed: () => scrollSpeed(), music: { MUS, THEMES, playStep, bossArrangement, resetNoise: () => { noiseBuf = null; } }, get R() { return R; }, set R(v) { R = v; }, get W() { return W; }, get H() { return H; }, get PORTRAIT() { return PORTRAIT; }, get SCALE() { return SCALE; }, resize, update, render, startGame, P, SAVE, save, redeemSecret, SECRETS, normCode, newPlayer, fixPlayer, renderHub, renderShop, switchZone, obsShapes, hitShape, toScreen, zoneStart, LAP_PX, NZ, ZONES, PX_PER_M, missionOf, firePulse, startBoss, BOSS_SEC, hzShapes, hitHz, bossUpdate, hudPups, activate, applyGfxMode, GFX, setTier, gfxWatch, spawnGroup, addCoin, DAILY_M, dailyStreak, springTrap, RUSH_ZONES };
 
 /* =================================================================
    PORTRAITS — painted pictures for the Sea Friends book, the trophies and the boss cards.
@@ -12271,7 +12017,6 @@ P_ART.seadragon = { bg: 'kelp', draw(c, t) {
   // the real leafy seadragon: small, upright-ish, and hard to tell from seaweed
   const pts = [];
   for (let i = 0; i <= 12; i++) { const k = i / 12; pts.push([100 + Math.sin(k * 3.4) * 18 + k * 30, 66 + k * 92]); }
-  const a = Math.atan2(pts[0][1] - pts[1][1], pts[0][0] - pts[1][0]) - .9;
   c.save(); drawDragonBody(c, pts, .78, t, { ang: Math.PI + .4, mouth: 0, weak: false }); c.restore();
   pBubbles(c, 5, 81);
 } };
@@ -12490,6 +12235,271 @@ function speakLine(key, text, btn) {
     speechSynthesis.speak(u);
   } catch (e) { voiceDone(); }
 }
+/* ===== 90-flow.js: Starting, pausing and ending swims, input, and boot (keep this file last) ===== */
+/* ----- game flow ----- */
+async function goFullscreen() {
+  if (!isTouch()) return;
+  try {
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+    }
+    if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
+  } catch (e) { /* the browser said no; the game still plays windowed */ }
+  try {
+    if (navigator.wakeLock && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  } catch (e) {}
+}
+let wakeLock = null;
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && wakeLock === null && isTouch()) {
+    try {
+      if (navigator.wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); }
+    } catch (e) {}
+  }
+});
+let lastOpts;
+function startGame(opts) {
+  lastOpts = opts;
+  closeOv();
+  document.body.classList.remove('photomode'); $('#photoBar').classList.remove('on');
+  musicDuck(false);
+  goFullscreen();
+  show('game');
+  resize();                      // the view width depends on the screen, so fix it before the run is built
+  $('#bossHud').classList.remove('on');
+  newRun(opts);
+  $('#hZone').textContent = R.zone.name;
+  const sh = $('#startHint');
+  sh.style.display = 'block';
+  sh.innerHTML = isTouch() ? '👆 Drag anywhere to swim!<br><small>Tap 💥 for a Sonic Pulse</small>' : '⌨️ Use the arrow keys (or drag) to swim!<br><small>Press SPACE for a Sonic Pulse</small>';
+  zoneBanner(R.zone.name, R.practice ? 'Boss practice — good luck!' : 'Dodge the obstacles, grab the coins!');
+  hudTick();
+  musicSync();                       // now that the run exists, play its area's theme
+}
+$('#goAgain').onclick = () => { SFX.click(); startGame(lastOpts); };
+$('#goHub').onclick = () => { closeOv(); R = null; renderHub(); };
+$('#goShop').onclick = () => { closeOv(); R = null; renderShop(); };
+$('#ddHub').onclick = () => { closeOv(); R = null; renderHub(); };
+$('#ddBoard').onclick = () => { closeOv(); R = null; renderDaily(); };
+$('#ddAgain').onclick = () => { SFX.click(); startGame({ daily: true }); };
+$('#rdHub').onclick = () => { closeOv(); R = null; renderHub(); };
+$('#rdAgain').onclick = () => { SFX.click(); startGame({ rush: true, zoneIdx: RUSH_ZONES[0] }); };
+/* Photo mode: freeze the moment, clear the screen of buttons, and save a picture. */
+function photoMode(on) {
+  if (!R) return;
+  R.photo = on;
+  document.body.classList.toggle('photomode', on);
+  $('#photoBar').classList.toggle('on', on);
+  if (on) { closeOv(); }                 // the run stays paused underneath
+  else { openOv('pause'); }
+}
+let photoZoom = false;
+function takePhoto() {
+  const cv = $('#cv');
+  const out = document.createElement('canvas');
+  out.width = cv.width; out.height = cv.height;
+  const c = out.getContext('2d');
+  if (photoZoom) {
+    // a close-up: crop a window around Finn (in canvas pixels) and blow it up to full size
+    const k = cv.width / W, f = R.fish;
+    const [sx, sy0] = toScreen(f.x, f.y);
+    const sy = FLIP() ? H - sy0 : sy0;
+    const cw = cv.width / 2.1, ch = cv.height / 2.1;
+    const x0 = clamp(sx * k - cw / 2, 0, cv.width - cw), y0 = clamp(sy * k - ch / 2, 0, cv.height - ch);
+    c.drawImage(cv, x0, y0, cw, ch, 0, 0, out.width, out.height);
+  } else c.drawImage(cv, 0, 0);
+  const s2 = out.width / 1280;           // scale the trim with the picture
+  // a rounded frame and a little caption, so it looks like a photo and not a screenshot
+  c.save();
+  c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 10 * s2;
+  roundRect(c, 14 * s2, 14 * s2, out.width - 28 * s2, out.height - 28 * s2, 22 * s2); c.stroke();
+  const p = R.p, cap = `${p.name} · ${R.rush ? 'Boss Rush' : R.daily ? 'Daily Challenge' : R.zone.name}`;
+  c.font = `700 ${Math.round(30 * s2)}px Fredoka, sans-serif`;
+  const w = c.measureText(cap).width + 34 * s2, bx = out.width / 2 - w / 2, by = out.height - 74 * s2;
+  c.fillStyle = 'rgba(6,36,71,.78)';
+  roundRect(c, bx, by, w, 46 * s2, 14 * s2); c.fill();
+  c.fillStyle = '#f2fbff'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText(cap, out.width / 2, by + 24 * s2);
+  c.font = `700 ${Math.round(20 * s2)}px Fredoka, sans-serif`;
+  c.fillStyle = 'rgba(255,255,255,.75)';
+  c.fillText('Finn Dash', out.width / 2, 46 * s2);
+  c.restore();
+  const fl = $('#flashFrame'); fl.classList.remove('snap'); void fl.offsetWidth; fl.classList.add('snap');
+  SFX.shutter(); buzz(20);
+  out.toBlob(bl => {
+    if (!bl) { toast('Could not save the picture'); return; }
+    const url = URL.createObjectURL(bl), a = document.createElement('a');
+    a.href = url; a.download = `finn-dash-${Date.now()}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 8000);
+    toast('📷 Photo saved!');
+  }, 'image/png');
+}
+function pause() { if (R && R.started && !R.dying && !R.over && !R.paused) { R.paused = true; renderPauseInfo(); openOv('pause'); musicDuck(true); } }
+$('#pauseBtn').onclick = pause;
+$('#pulseBtn').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); firePulse(); });
+$('#pResume').onclick = () => { closeOv(); if (R) { R.paused = false; R.pendingDrag = [0, 0]; R.mouseT = null; } musicDuck(false); };
+$('#pQuit').onclick = () => { closeOv(); musicDuck(false); if (R) { R.paused = false; R.dying = true; R.dieT = .01; } };
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pause();
+  if (AC) { try { document.hidden ? AC.suspend() : AC.resume(); } catch (e) {} }
+});
+/* A short buzz on phones and tablets. Off on anything without a vibration motor. */
+const CAN_BUZZ = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+function buzz(ms) {
+  if (!CAN_BUZZ || SAVE.rumble === false) return;
+  try { navigator.vibrate(ms); } catch (e) {}
+}
+function setRumble(v) {
+  SAVE.rumble = v; save();
+  $('#pRumble').textContent = 'Rumble: ' + (v ? 'On' : 'Off');
+}
+function setMuted(v) {
+  SAVE.muted = v; save();
+  $('#muteBtn').textContent = v ? '🔇' : '🔊';
+  $('#pSound').textContent = 'Sound: ' + (v ? 'Off' : 'On');
+  musicVolumeChanged();
+  if (!v) musicSync();
+}
+function setMusic(v) {
+  MUS.on = v; SAVE.music = v; save();
+  $('#pMusic').textContent = 'Music: ' + (v ? 'On' : 'Off');
+  musicVolumeChanged();
+  if (v) musicSync();
+}
+$('#muteBtn').onclick = () => setMuted(!SAVE.muted);
+$('#pSound').onclick = () => setMuted(!SAVE.muted);
+$('#pMusic').onclick = () => setMusic(!MUS.on);
+$('#pPhoto').onclick = () => { SFX.click(); photoMode(true); };
+$('#phShot').onclick = () => takePhoto();
+$('#phZoom').onclick = () => { photoZoom = !photoZoom; $('#phZoom').textContent = photoZoom ? '🔍 Close-up' : '🔭 Wide shot'; SFX.click(); };
+$('#phDone').onclick = () => { SFX.click(); photoMode(false); };
+$('#pRumble').onclick = () => { setRumble(SAVE.rumble === false); SFX.click(); buzz(30); };
+$('#gfxBtn').onclick = () => { const order = ['auto', 'full', 'balanced', 'lite']; applyGfxMode(order[(order.indexOf(GFX.mode) + 1) % 4]); SFX.click(); };
+
+/* =================================================================
+   INPUT
+   ================================================================= */
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (!R || !$('#game').classList.contains('on')) return;
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
+  if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
+    if (R.paused) $('#pResume').click(); else pause();
+    return;
+  }
+  if (e.key === 'Enter' || e.key === ' ') {
+    for (const [ov, btn] of [['over', 'goAgain'], ['dailydone', 'ddAgain'], ['rushdone', 'rdAgain']])
+      if ($('#ov-' + ov).classList.contains('on')) { $('#' + btn).click(); return; }
+  }
+  if (e.key === ' ') { if (!e.repeat) firePulse(); return; }
+  keys[keyName(e)] = true;
+});
+// letters are stored lower-case, so "a" pressed and "A" released is still the same key
+const keyName = e => e.key.length === 1 ? e.key.toLowerCase() : e.key;
+document.addEventListener('keyup', e => { keys[keyName(e)] = false; });
+window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+let drag = null;
+const gameEl = $('#game');
+gameEl.addEventListener('pointerdown', e => {
+  if (e.target.closest('button')) return;
+  drag = { id: e.pointerId, x: e.clientX, y: e.clientY, mouse: e.pointerType === 'mouse' };
+  if (drag.mouse) setMouseTarget(e);
+  // keep receiving this pointer even if it is released over an overlay
+  try { gameEl.setPointerCapture(e.pointerId); } catch (_) {}
+  if (e.pointerType === 'touch') document.body.classList.add('touch');
+});
+gameEl.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id || !R) return;
+  if (e.pointerType === 'mouse' && !(e.buttons & 1)) { drag = null; if (R) R.mouseT = null; return; }   // button already up
+  // with a mouse, Finn swims to wherever the pointer is, so the edge of the window
+  // can never stop him reaching the bottom of the screen
+  if (drag.mouse) { if (!R.paused && !R.dying && !R.over) setMouseTarget(e); return; }
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  drag.x = e.clientX; drag.y = e.clientY;
+  if (R.paused || R.dying || R.over) return;            // don't bank movement for later
+  const k = 1.15 / SCALE;
+  R.pendingDrag[0] += dx * k; R.pendingDrag[1] += dy * k;
+});
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => gameEl.addEventListener(t, e => { if (drag && e.pointerId === drag.id) { drag = null; if (R) R.mouseT = null; } }));
+function setMouseTarget(e) {
+  if (!R) return;
+  const r = cv.getBoundingClientRect();
+  R.mouseT = [(e.clientX - r.left) / SCALE, (e.clientY - r.top) / SCALE];
+}
+// Landscape only: if a phone is held upright, ask for a turn (and pause, so nobody
+// loses a run while the screen is sideways).
+function checkOrient() {
+  const on = false;                    // portrait is supported now, so no need to ask for a turn
+  $('#rotate').classList.toggle('on', on);
+  if (on && R && R.started && !R.paused && $('#game').classList.contains('on')) pause();
+}
+function relayout() { checkOrient(); resize(); }
+window.addEventListener('resize', relayout);
+window.addEventListener('orientationchange', () => setTimeout(relayout, 140));
+
+/* =================================================================
+   BOOT
+   ================================================================= */
+let lastT = 0;
+let prevT = 0;
+function frame(ts) {
+  requestAnimationFrame(frame);          // first, so one bad frame can never freeze the game
+  const dtMs = ts - lastT, dt = Math.min(.05, dtMs / 1000 || 0); lastT = ts;
+  const inGame = R && gameEl.classList.contains('on');
+  if (inGame) {
+    update(dt); render();
+    if (R && R.started && !R.paused && !R.over) gfxWatch(dtMs);
+  }
+  // menu fish previews only need ~20fps
+  if (!inGame && ts - prevT > 40) { prevT = ts; drawPreviews(ts / 1000); homeTick(ts / 1000); titleTick(ts / 1000); }
+}
+function bubblesBg() {
+  const box = $('#bgBubbles');
+  let h = '';
+  for (let i = 0; i < 18; i++) { const s = rand(8, 28); h += `<i style="left:${rand(0, 100)}%;width:${s}px;height:${s}px;animation-duration:${rand(9, 20)}s;animation-delay:-${rand(0, 20)}s"></i>`; }
+  box.innerHTML = h;
+}
+if (('ontouchstart' in window) || (window.matchMedia && matchMedia('(pointer:coarse)').matches)) document.body.classList.add('touch');
+load();
+holidayApply();
+setMuted(!!SAVE.muted);
+setRumble(SAVE.rumble !== false);
+if (!CAN_BUZZ) $('#pRumble').style.display = 'none';
+setMusic(SAVE.music !== false);
+// browsers only allow sound after a gesture, so the menu theme starts on the first one
+// iPhones mute Web Audio when the ring/silent switch is set to silent. Playing a silent looping
+// clip from a real <audio> element switches the phone into "playback" mode, so the game is heard.
+let silentEl = null;
+function iosUnmute() {
+  if (silentEl) { silentEl.play().catch(() => {}); return; }
+  try {
+    silentEl = document.createElement('audio');
+    silentEl.setAttribute('playsinline', ''); silentEl.loop = true; silentEl.volume = .01;
+    // ~0.1s of silence (a tiny WAV)
+    silentEl.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA';
+    silentEl.play().catch(() => {});
+  } catch (e) {}
+}
+['pointerdown', 'keydown'].forEach(ev => window.addEventListener(ev, function once() {
+  window.removeEventListener(ev, once);
+  iosUnmute();
+  audio();                                     // resumes a context created before any gesture
+  musicSync();
+}, { once: true }));
+document.addEventListener('visibilitychange', () => { if (!document.hidden && silentEl) silentEl.play().catch(() => {}); });
+applyGfxMode(SAVE.gfx || 'auto');
+bubblesBg();
+fishPreview($('#titleFish'), 'finn', 'none', true);
+if (P()) renderHub(); else renderTitle();
+resize();       // fills in the --sa* safe-area vars before anything is shown
+checkOrient();
+requestAnimationFrame(frame);
+
+window.__fd = { laneA: x => laneA(x), wallAt: x => wallAt(x), scrollSpeed: () => scrollSpeed(), music: { MUS, THEMES, playStep, bossArrangement, resetNoise: () => { noiseBuf = null; } }, get R() { return R; }, set R(v) { R = v; }, get W() { return W; }, get H() { return H; }, get PORTRAIT() { return PORTRAIT; }, get SCALE() { return SCALE; }, resize, update, render, startGame, P, SAVE, save, redeemSecret, SECRETS, normCode, newPlayer, fixPlayer, renderHub, renderShop, switchZone, obsShapes, hitShape, toScreen, zoneStart, LAP_PX, NZ, ZONES, PX_PER_M, missionOf, firePulse, startBoss, BOSS_SEC, hzShapes, hitHz, bossUpdate, hudPups, activate, applyGfxMode, GFX, setTier, gfxWatch, spawnGroup, addCoin, DAILY_M, dailyStreak, springTrap, RUSH_ZONES };
 
 </script>
 </body>
