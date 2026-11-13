@@ -1,3 +1,58 @@
 plugins {
-    id 'com.android.application' version '8.5.2' apply false
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.jsnyder.finndash'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.jsnyder.finndash"
+        minSdk 24           // Fire HD tablets from about 2017 onward
+        targetSdk 36        // Android 16: what Google Play requires for new apps and updates
+        // Every cloud build gets a higher version code than the last, so a new build
+        // always installs over the old one (and Play accepts it) without touching this file.
+        versionCode 100 + (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInteger()
+        versionName "5.1"
+    }
+
+    signingConfigs {
+        family {
+            storeFile file(FD_STORE_FILE)
+            storePassword FD_STORE_PASSWORD
+            keyAlias FD_KEY_ALIAS
+            keyPassword FD_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.family
+        }
+        debug {
+            signingConfig signingConfigs.family
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // a warning from the checker should never stop a family build
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    // Tip Finn: the Golden Narwhal is sold through Google Play Billing (Play requires version 8 or newer)
+    implementation 'com.android.billingclient:billing:8.3.0'
+    // Play Age Signals (beta): lets the app respect a parent's purchase settings.
+    // If this one line ever stops a build, delete it: the app checks for it at run time and
+    // simply skips the age check when it isn't there.
+    implementation 'com.google.android.play:age-signals:0.0.4'
 }

@@ -1,6 +1,9 @@
-name: Build Finn Dash APK
+name: Build Finn Dash
 
 # Runs whenever you push a change, and can also be started by hand from the Actions tab.
+# Makes two files:
+#   finn-dash.apk  - install straight onto the family tablets, as before
+#   finn-dash.aab  - the "app bundle" you upload to the Google Play Console
 on:
   push:
     branches: [ main, master ]
@@ -28,19 +31,21 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          gradle-version: '8.9'
+          gradle-version: '8.13'
 
-      - name: Build the app
-        run: gradle assembleRelease --no-daemon --stacktrace
+      - name: Build the app and the Play bundle
+        run: gradle assembleRelease bundleRelease --no-daemon --stacktrace
 
-      - name: Name it finn-dash.apk
-        run: cp app/build/outputs/apk/release/app-release.apk finn-dash.apk
+      - name: Name them finn-dash.apk and finn-dash.aab
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk finn-dash.apk
+          cp app/build/outputs/bundle/release/app-release.aab finn-dash.aab
 
-      - name: Publish it as the latest download
+      - name: Publish them as the latest download
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest finn-dash.apk \
+          gh release create latest finn-dash.apk finn-dash.aab \
             --title "Finn Dash - latest build" \
-            --notes "Tap **finn-dash.apk** below on the Fire tablet to install the newest version."
+            --notes "Tap **finn-dash.apk** on a tablet to install it. Upload **finn-dash.aab** to the Google Play Console."

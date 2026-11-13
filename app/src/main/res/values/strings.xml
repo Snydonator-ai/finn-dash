@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Finn Dash</string>
+    <!-- the full name: Settings > Apps, the app switcher, and Google Play -->
+    <string name="app_name">Finn Dash: Ocean Run</string>
+    <!-- the short name under the home-screen icon, where long names get cut off -->
+    <string name="launcher_name">Finn Dash</string>
 </resources>

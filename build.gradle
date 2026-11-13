@@ -1,3 +1,5 @@
 plugins {
-    id 'com.android.application' version '8.5.2' apply false
+    // 8.13 is the plugin that knows about Android 16 (API 36), which Google Play now requires.
+    // It needs Gradle 8.13 and Java 17 (the workflow sets both up).
+    id 'com.android.application' version '8.13.0' apply false
 }

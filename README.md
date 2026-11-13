@@ -1,40 +1,46 @@
-# Finn Dash — Android app
+# Finn Dash: Ocean Run — Android app (v5)
 
-A small full-screen Android app that runs the Finn Dash game. The whole game is the single file
-`app/src/main/assets/finn-dash.html`; this project just wraps it in a web view so it gets a home-screen
-icon, runs in landscape with no browser bars, and works with no internet at all (the app asks for no
-permissions whatsoever, not even network access).
+A small full-screen Android app that runs the game. The whole game is the single file
+`app/src/main/assets/finn-dash.html`; `MainActivity.java` wraps it in a web view and adds the parts a web
+page can't do by itself.
 
 ## How a build happens
 
-Pushing this project to GitHub triggers `.github/workflows/build-apk.yml`, which builds the app on
-GitHub's servers and attaches `finn-dash.apk` to a release tagged **latest**. Nothing needs to be
-installed on your own computer. The step-by-step guide is in `FIRE-TABLET-SETUP.md`, next to this
-project in the Kids Game folder.
+Pushing to GitHub runs `.github/workflows/build-apk.yml`, which builds on GitHub's servers and attaches two
+files to the release tagged **latest**:
 
-## Updating the game later
+| File | What it's for |
+|---|---|
+| `finn-dash.apk` | install straight onto the family tablets, as before |
+| `finn-dash.aab` | the "app bundle" you upload to the Google Play Console |
 
-Replace `app/src/main/assets/finn-dash.html` with a newer copy of the game and push. `versionCode` is
-derived from the GitHub build number, so every cloud build is automatically newer than the last and
-no file needs editing by hand. Installs always go over the top of the previous one because every
-build is signed with `app/finndash-key.jks`, so saved players and coins survive an update.
+`versionCode` comes from the GitHub build number, so every build is newer than the last.
 
-## Phones as well as tablets
+## What the app wrapper does
 
-The activity draws into the display cutout (`LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES`) and the game
-reads the cutout size through CSS `env(safe-area-inset-*)`, so the play field stays clear of the
-camera hole while still using the whole screen. Orientation is `sensorLandscape`; held upright, the
-game shows a rotate prompt and pauses itself.
+- full screen, screen kept awake, buttons kept clear of the camera hole
+- Back button / back swipe (Android 16 style): closes menus, pauses a swim, and asks "Leave?" on the main menu
+- pauses and goes quiet when another app needs the sound (a phone call, an alarm)
+- **Tip Finn**: the Golden Narwhal (`golden_narwhal`, one-time, $2.99) through Google Play Billing 8.3,
+  checked again at every launch (restores on a new tablet, removed after a refund)
+- **Play Age Signals (beta)**: asked only when a grown-up opens the Support Finn card; if a parent's
+  settings say no, the tip is hidden. Nothing from it is stored.
+
+## Versions that matter
+
+| Thing | Version | Why |
+|---|---|---|
+| targetSdk / compileSdk | 36 | Google Play requires Android 16 for new apps and updates |
+| Android Gradle Plugin (root `build.gradle`) | 8.13.0 | the first plugin line that knows API 36 well; needs Gradle 8.13 + Java 17 |
+| Gradle (in the workflow) | 8.13 | |
+| Billing library | 8.3.0 | Play requires version 8 or newer |
 
 ## Files worth knowing
 
 | Path | What it is |
 |---|---|
 | `app/src/main/assets/finn-dash.html` | the game itself |
-| `app/src/main/java/com/jsnyder/finndash/MainActivity.java` | the web view wrapper: fullscreen, landscape, screen stays awake, back button pauses then exits |
-| `app/src/main/res/mipmap-*` | the app icon (Finn on an ocean background) |
-| `app/finndash-key.jks` | the family signing key, so updates install over the old version |
-| `gradle.properties` | the (deliberately simple) key passwords |
-
-The signing key is only here so updates work; it protects nothing valuable. If this project ever goes
-to a store, generate a fresh key and keep it private.
+| `app/src/main/java/com/jsnyder/finndash/MainActivity.java` | the wrapper described above |
+| `app/src/main/res/values/strings.xml` | the app's name ("Finn Dash: Ocean Run"; "Finn Dash" under the icon) |
+| `app/src/main/res/mipmap-*` | the app icon |
+| `app/finndash-key.jks` + `gradle.properties` | the signing key. On Google Play it's only the *upload* key (Play App Signing re-signs the app), but keep this repository **private**. |
