@@ -110,7 +110,7 @@ body[data-holiday=thanksgiving] .holbanner{background:linear-gradient(90deg,rgba
 .hubplay .btn{width:100%;position:relative} .hubplay .big{font-size:28px;padding:16px 10px}
 @keyframes nudge{0%,100%{transform:scale(1)}50%{transform:scale(1.06);filter:brightness(1.15)}}
 .btn.nudge{animation:nudge 1.1s ease-in-out infinite}
-@media (max-width:620px){.hubtop{grid-template-columns:1fr}#hubFish{width:150px;height:88px}.hubplay{flex-direction:row}.hubplay .big{font-size:24px}}
+@media (max-width:620px){.hubtop{grid-template-columns:1fr}#hubFish{width:150px;height:88px}.hubplay .big{font-size:26px}}
 .mfo-body{text-align:left;display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .mfo-body .sec{background:rgba(255,255,255,.08);border-radius:14px;padding:8px 12px}
 .mfo-body .sec b{color:#ffe066}
@@ -150,8 +150,8 @@ body[data-holiday=thanksgiving] .holbanner{background:linear-gradient(90deg,rgba
 .quest .bar i{display:block;height:100%;background:linear-gradient(90deg,#ffd23f,#ff9a3d)}
 .quest.done .bar i{background:linear-gradient(90deg,var(--kelp),var(--aqua))}
 @media (max-width:620px){
-  .hubmenu{grid-template-columns:repeat(2,1fr);gap:10px}
-  .hubmenu .btn{font-size:16px}
+  .hubmenu{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .hubmenu .btn{font-size:15px;padding:11px 4px;white-space:normal;line-height:1.15}
 }
 .stat b{color:var(--text)}
 /* shop */
@@ -208,6 +208,42 @@ body[data-holiday=thanksgiving] .holbanner{background:linear-gradient(90deg,rgba
 #startHint{position:absolute;left:50%;bottom:22%;transform:translateX(-50%);font-size:22px;font-weight:600;text-align:center;text-shadow:0 2px 0 rgba(0,0,0,.5);pointer-events:none;animation:blink 1.2s infinite}
 @keyframes blink{50%{opacity:.35}}
 /* overlays */
+/* the hub: three big buttons, three doors, one gear */
+.hubpair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hubpair .btn{width:100%;position:relative;white-space:nowrap;padding-left:8px;padding-right:8px}
+.gearbtn{min-width:0!important;padding:6px 12px!important;font-size:20px!important;line-height:1;background:rgba(6,36,71,.7)!important;border:2px solid rgba(120,200,255,.3)!important;border-radius:999px!important}
+/* the swim block sits in the middle of the screen, not stuck to the top of a big one */
+#scr-hub .nextgoal{margin-top:auto} #scr-hub .nextgoal:empty + .hubtop{margin-top:auto} #scr-hub .hubmenu{margin-bottom:auto}
+#scr-hub::after{content:"";flex:0 0 40px}
+.hubmenu{width:min(880px,100%)}
+@media (min-width:1000px) and (min-height:700px){
+  #scr-hub .wide{width:min(1000px,100%)}
+  #scr-hub .hubplay .big{font-size:40px;padding:22px 10px}
+  #scr-hub .hubpair .btn{font-size:24px;padding:18px 10px}
+  #scr-hub .hubmenu .btn{font-size:22px;padding:16px 10px}
+  #scr-hub .hubtop{gap:18px} #scr-hub .hubmenu{gap:18px;margin-top:18px}
+  #hubFish{width:300px;height:173px}
+}
+.doorgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:8px auto 0;width:min(720px,100%)}
+.doorgrid.two{grid-template-columns:repeat(2,minmax(0,1fr));width:min(520px,100%)}
+.doorgrid .door{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 10px;font-size:19px;line-height:1.15}
+.doorgrid .door small{font-size:13px;font-weight:600;opacity:.85}
+@media (max-width:620px){.doorgrid{grid-template-columns:1fr}.doorgrid.two{grid-template-columns:1fr 1fr}}
+.setmore{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:16px auto 0;width:min(420px,100%);padding-top:14px;border-top:1px solid rgba(120,200,255,.25)}
+.setmore .btn{width:100%;line-height:1.15} .setmore #speedToggle{grid-column:1/3}
+#ov-modes .card{width:min(760px,100%)} #ov-collect .card{width:min(560px,100%)}
+.goalscard{width:min(980px,100%)!important;max-height:calc(100% - 8px);overflow:auto}
+.goalscard .hubgrid{margin-top:10px;text-align:left}
+.goalscard .holbanner{margin:4px 0 0}
+.goalscard .hubgrid > .card{text-align:left} .goalscard .hubgrid h3{text-align:center}
+/* a short landscape phone: Settings goes side by side so nothing hides under the Done button */
+@media (max-height:520px) and (orientation:landscape){
+  #ov-settings .card{width:min(860px,100%);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:22px;align-items:start}
+  #ov-settings .card > h2, #ov-settings .card > .row{grid-column:1/3}
+  #ov-settings .card > .setrow, #ov-settings .card > .small-note{grid-column:1}
+  #ov-settings .pausegrid{grid-column:2;grid-row:2/4;margin-top:10px;width:100%}
+  #ov-settings .setmore{grid-column:2;grid-row:4/7;margin-top:0;border-top:0;padding-top:0;width:100%}
+}
 .ov{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;background:rgba(2,16,36,.7);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
 .ov.on{display:flex}
 .rw-card{width:min(640px,100%)!important}
@@ -375,7 +411,6 @@ body.touch .screen{padding-left:calc(16px + var(--sal,0px));padding-right:calc(1
   #hubFish{width:210px;height:120px;margin:2px auto}
   #scr-hub .perk{margin:2px 0}
   #scr-hub .row{margin-top:6px!important}
-  #scr-hub .hubgrid{margin-top:16px}
   #scr-hub .card{padding:12px}
 }
 /* short landscape (the little tablets): squeeze the hub so the bottom row is still on screen */
@@ -385,16 +420,9 @@ body.touch .screen{padding-left:calc(16px + var(--sal,0px));padding-right:calc(1
   #scr-hub .perk{margin:1px 0;font-size:15px}
   #scr-hub .small-note{font-size:13px}
   #scr-hub .row{margin-top:5px!important}
-  #scr-hub .hubgrid{margin-top:4px;gap:8px}
   #scr-hub .card{padding:8px}
-  #scr-hub #stats div,#scr-hub #missions div{font-size:14px;padding:1px 0}
   #scr-hub .btn{padding:9px 15px;font-size:16px}
   #scr-hub .btn.big{font-size:23px;padding:11px 30px}
-}
-@media (max-height:600px) and (orientation:landscape){
-  /* too short to show everything: the two info cards go last so the buttons stay in view */
-  #scr-hub .hubgrid{order:9;margin-top:8px}
-  #scr-hub .hub-bottom{order:8;margin-top:8px!important}
 }
 @media (max-height:560px) and (orientation:landscape){
   .logo{font-size:clamp(32px,8vh,54px);margin:2px 0 2px}
@@ -538,7 +566,7 @@ body.calm #trkBoss.near{animation:none}
 @keyframes dragHand{0%,100%{transform:translate(-70px,0)}25%{transform:translate(0,-26px)}50%{transform:translate(70px,0)}75%{transform:translate(0,26px)}}
 #startHint.hand{animation:none}
 /* a brand-new player's menu: one fish, one big button */
-#scr-hub.first .hubmenu,#scr-hub.first .hubgrid,#scr-hub.first #homeBtn,#scr-hub.first #speedToggle,#scr-hub.first #secretBtn{display:none}
+#scr-hub.first .hubmenu,#scr-hub.first .hubpair{display:none}
 #scr-hub.first #playBtn{font-size:clamp(30px,6vw,44px);padding:22px 50px}
 /* a card's bottom row of buttons stays in view even when the card has to scroll (small phones) */
 .ov .card > .row:last-child{position:sticky;bottom:0;z-index:2;margin:10px -8px -8px;padding:8px 8px 8px;background:linear-gradient(180deg,rgba(10,47,90,0),#0a2f5a 30%)}
@@ -551,6 +579,9 @@ body.calm #trkBoss.near{animation:none}
   #warpGrid{grid-template-columns:repeat(3,1fr)}
   .ov .card.go-card > .row:last-child{margin-top:8px}
 }
+.homecombos{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:6px auto 0;font-size:15px}
+.homecombos .rc{background:rgba(6,36,71,.6);border:2px dashed rgba(160,220,255,.4);border-radius:999px;padding:2px 10px;min-width:30px;text-align:center}
+.homecombos .rc.got{border:2px solid #ffd23f;background:rgba(255,210,63,.18);color:#ffe066;font-weight:700}
 </style>
 </head>
 <body>
@@ -590,11 +621,12 @@ body.calm #trkBoss.near{animation:none}
     <div class="row">
       <span class="pill">🏆 <b id="hubBest">0</b> m</span>
       <span class="pill"><span class="coin"></span> <b id="hubCoins">0</b></span>
+      <button class="btn ghost small gearbtn" id="settingsBtn" title="Settings and more" aria-label="Settings and more">⚙️</button>
     </div>
   </div>
   <!-- what to do next, in one line (and read out loud for little ones) -->
   <div class="nextgoal wide" id="nextGoal"></div>
-  <div class="holbanner wide" id="holBanner"></div>
+  <!-- the three big things, front and centre: swim, shop, your reef. Everything else sits one tap down. -->
   <div class="hubtop wide">
     <div class="card myfish" id="myFishCard" role="button" tabindex="0">
       <canvas id="hubFish" width="520" height="300"></canvas>
@@ -606,38 +638,16 @@ body.calm #trkBoss.near{animation:none}
     </div>
     <div class="hubplay">
       <button class="btn sun big" id="playBtn">▶ SWIM!</button>
-      <button class="btn aqua" id="homeBtn">🏠 My Reef<span class="badge" id="homeBadge"></span></button>
+      <div class="hubpair">
+        <button class="btn coral" id="shopBtn">🛒 Shop<span class="badge" id="shopBadge"></span></button>
+        <button class="btn aqua" id="homeBtn">🏠 My Reef<span class="badge" id="homeBadge"></span></button>
+      </div>
     </div>
   </div>
-  <!-- six doors off the menu, all the same size: ways to play on top, your stuff underneath -->
-  <div class="hubmenu">
-    <button class="btn aqua" id="dailyBtn">🗓️ Daily Challenge<span class="badge" id="dailyBadge"></span></button>
-    <button class="btn kelp" id="practiceBtn">🐙 Boss Practice</button>
-    <button class="btn rose" id="rushBtn">🥇 Boss Rush</button>
-    <button class="btn coral" id="shopBtn">🛒 Shop<span class="badge" id="shopBadge"></span></button>
-    <button class="btn plum" id="trophyBtn">🏆 Trophies<span class="badge" id="trophyBadge"></span></button>
-    <button class="btn ocean" id="bookBtn">📖 Sea Friends<span class="badge" id="bookBadge"></span></button>
-  </div>
-  <div class="hubgrid wide">
-    <div class="card">
-      <h3>🎯 Missions</h3>
-      <div id="missions"></div>
-    </div>
-    <div class="card">
-      <h3>🧭 Quests</h3>
-      <div id="quests"></div>
-    </div>
-    <div class="card">
-      <h3>📊 Stats</h3>
-      <div id="stats"></div>
-    </div>
-  </div>
-  <div class="row hub-bottom" style="margin-top:16px">
-    <button class="btn ghost small" id="speedToggle"></button>
-    <button class="btn plum small" id="secretBtn">🔑 Secret Codes</button>
-    <button class="btn ghost small" id="settingsBtn">⚙️ Settings</button>
-    <button class="btn ghost small" id="parentsBtn">👪 Grown-ups</button>
-    <button class="btn ghost small" id="switchBtn">👥 Switch Player</button>
+  <div class="hubmenu wide">
+    <button class="btn kelp" id="modesBtn">🎮 Challenges<span class="badge" id="modesBadge"></span></button>
+    <button class="btn plum" id="goalsBtn">🎯 Goals<span class="badge" id="goalsBadge"></span></button>
+    <button class="btn ocean" id="collectBtn">🏆 Collection<span class="badge" id="collectBadge"></span></button>
   </div>
 </section>
 
@@ -723,6 +733,7 @@ body.calm #trkBoss.near{animation:none}
   </div>
   <canvas id="homeCv" class="wide"></canvas>
   <div class="small-note">👆 Tap things in your reef to play with them!</div>
+  <div class="homecombos wide" id="homeCombos"></div>
   <div class="homebar wide">
     <button class="btn sun" id="homeTreasure"></button>
     <div class="card homeup" id="homeUp"></div>
@@ -911,6 +922,37 @@ body.calm #trkBoss.near{animation:none}
   </div>
 </div></div>
 
+<!-- the hub's three doors (17-menus.js): each opens a small menu of its own -->
+<div class="ov" id="ov-modes"><div class="card">
+  <h2>🎮 Challenges</h2>
+  <div class="doorgrid">
+    <button class="btn aqua door" id="dailyBtn" data-from="modes">🗓️ Daily Challenge<small>A new course every day</small><span class="badge" id="dailyBadge"></span></button>
+    <button class="btn kelp door" id="practiceBtn" data-from="modes">🐙 Boss Practice<small>Fight any boss you like</small></button>
+    <button class="btn rose door" id="rushBtn" data-from="modes">🥇 Boss Rush<small>Every boss, against the clock</small></button>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="btn ghost small" id="modesClose">Back</button></div>
+</div></div>
+
+<div class="ov" id="ov-goals"><div class="card goalscard">
+  <h2>🎯 Goals</h2>
+  <div class="holbanner" id="holBanner"></div>
+  <div class="hubgrid">
+    <div class="card"><h3>🎯 Missions</h3><div id="missions"></div></div>
+    <div class="card"><h3>🧭 Quests</h3><div id="quests"></div></div>
+    <div class="card"><h3>📊 Stats</h3><div id="stats"></div></div>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="btn sun" id="goalsClose">Let's go!</button></div>
+</div></div>
+
+<div class="ov" id="ov-collect"><div class="card">
+  <h2>🏆 Collection</h2>
+  <div class="doorgrid two">
+    <button class="btn plum door" id="trophyBtn" data-from="collect">🏆 Trophies<small id="collTrophy"></small><span class="badge" id="trophyBadge"></span></button>
+    <button class="btn ocean door" id="bookBtn" data-from="collect">📖 Sea Friends<small id="collBook"></small><span class="badge" id="bookBadge"></span></button>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="btn ghost small" id="collectClose">Back</button></div>
+</div></div>
+
 <div class="ov" id="ov-settings"><div class="card">
   <h2>⚙️ Settings</h2>
   <div class="setrow"><span>🎵 Music</span><input type="range" min="0" max="100" step="5" id="setMusic"><b id="setMusicV"></b></div>
@@ -921,6 +963,12 @@ body.calm #trkBoss.near{animation:none}
     <button class="btn ghost small" id="setCalm">⚡ Reduce flashing: Off</button>
     <button class="btn ghost small" id="setLefty">🫧 Blast button: Right</button>
     <button class="btn ghost small" id="setSparkle" style="display:none">✨ Sparkle: On</button>
+  </div>
+  <div class="setmore" id="setMore">
+    <button class="btn ghost small" id="speedToggle"></button>
+    <button class="btn plum small door" id="secretBtn">🔑 Secret Codes</button>
+    <button class="btn ghost small door" id="parentsBtn">👪 Grown-ups</button>
+    <button class="btn ghost small door" id="switchBtn">👥 Switch Player</button>
   </div>
   <div class="row" style="margin-top:12px"><button class="btn sun" id="setClose">Done</button></div>
 </div></div>
@@ -988,7 +1036,7 @@ body.calm #trkBoss.near{animation:none}
 // The view is 960x540 game units on a normal screen. On a tall phone screen the
 // width grows instead of showing black bars, so hazards come into view sooner.
 let W = 960, H = 540;
-const BASE_W = 960, MAX_W = 1240;
+const BASE_W = 960, MAX_W = 1240, LAND_H_MAX = 640;
 // Portrait (a phone held upright): the view is 540 wide and as tall as the screen allows.
 const PORT_W = 540, PORT_H_MIN = 780, PORT_H_MAX = 1240;
 let PORTRAIT = false;
@@ -1155,13 +1203,16 @@ const wallW = wx => Math.round(W * wallFrac(wx) * (PORTRAIT ? .5 : 1));
 // [left wall, right wall, open lane] at a world position. Normal swims are symmetric;
 // the Daily Challenge is a tight corridor that snakes from side to side.
 const DAILY_LANE = () => PORTRAIT ? .54 : .44;
+// [left wall, right wall, open water]. It is asked dozens of times a frame, so it hands back the same
+// little array each time: read it straight away, never keep it.
+const WS = [0, 0, 0];
 function wallSides(wx) {
   const A = R.A;
-  if (!R.daily) { const w = Math.min(wallW(wx), A * .38); return [w, w, A - 2 * w]; }
+  if (!R.daily) { const w = Math.min(wallW(wx), A * .38); WS[0] = w; WS[1] = w; WS[2] = A - 2 * w; return WS; }
   const lane = Math.max(150, A * DAILY_LANE());
   const centre = A / 2 + Math.sin(wx * .0042) * A * .17 + Math.sin(wx * .0011 + 1.3) * A * .07;
   const left = clamp(Math.round(centre - lane / 2), 20, A - lane - 20);
-  return [left, A - lane - left, lane];
+  WS[0] = left; WS[1] = A - lane - left; WS[2] = lane; return WS;
 }
 const wallAt = wx => R && R.vert ? wallSides(wx)[0] : 0;     // the left wall: the lane's offset
 const laneA = wx => R && R.vert ? wallSides(wx)[2] : R.A;    // open water between the walls
@@ -2781,10 +2832,30 @@ function drawGlowAura(c, x, y, col, scale, t) {
   c.restore();
 }
 // ribbons that follow the fish along its recent path
+/* Ribbon outlines are traced through two reusable buffers rather than fresh arrays of points:
+   a streamer is drawn every frame, and those little arrays were the biggest pile of garbage a frame made. */
+const RIB = { cx: new Float64Array(256), cy: new Float64Array(256), L: new Float64Array(512), R: new Float64Array(512), n: 0 };
+function ribbonRoom(n) {
+  if (n <= RIB.cx.length) return;
+  RIB.cx = new Float64Array(n * 2); RIB.cy = new Float64Array(n * 2); RIB.L = new Float64Array(n * 4); RIB.R = new Float64Array(n * 4);
+}
+// a closed band of half-width hw(i) either side of the centre line RIB.cx/cy (RIB.n points)
+function ribbonPath(c, hw) {
+  const n = RIB.n, cx = RIB.cx, cy = RIB.cy, L = RIB.L, Rr = RIB.R;
+  for (let i = 0; i < n; i++) {
+    const a = i > 0 ? i - 1 : 0, b = i < n - 1 ? i + 1 : n - 1;
+    let nx = -(cy[b] - cy[a]), ny = cx[b] - cx[a]; const d = Math.hypot(nx, ny) || 1; nx /= d; ny /= d;
+    const w = hw(i, n);
+    L[2 * i] = cx[i] + nx * w; L[2 * i + 1] = cy[i] + ny * w; Rr[2 * i] = cx[i] - nx * w; Rr[2 * i + 1] = cy[i] - ny * w;
+  }
+  c.beginPath(); c.moveTo(L[0], L[1]);
+  for (let i = 1; i < n; i++) c.lineTo(L[2 * i], L[2 * i + 1]);
+  for (let i = n - 1; i >= 0; i--) c.lineTo(Rr[2 * i], Rr[2 * i + 1]);
+  c.closePath();
+}
 function drawStreamer(c, pts, def, t, scale, vert = false) {
   if (!def || def.id === 'none' || pts.length < 4) return;
   // the ribbons sit either side of the trail: sideways when diving, up/down when swimming across
-  const at = (p, d) => vert ? [p[0] + d, p[1]] : [p[0], p[1] + d];
   c.save();
   if (def.bubbles) {
     for (let i = 3; i < pts.length; i += 3) {
@@ -2829,26 +2900,18 @@ function drawStreamer(c, pts, def, t, scale, vert = false) {
   }
   if (def.comet) {
     // one broad blazing tail straight down the wake: blue edge, white-hot core, stars shaken loose
-    const cl = pts.slice(1);
-    const tail = (wk, col, a) => {
-      const L = [], Rr = [];
-      for (let i = 0; i < cl.length; i++) {
-        const a2 = cl[Math.max(0, i - 1)], b2 = cl[Math.min(cl.length - 1, i + 1)];
-        let nx = -(b2[1] - a2[1]), ny = b2[0] - a2[0]; const d = Math.hypot(nx, ny) || 1; nx /= d; ny /= d;
-        const f = 1 - i / cl.length, hw = (11 * Math.pow(f, 1.3) + .5) * scale * wk * (1 + .08 * Math.sin(t * 20 + i));
-        L.push([cl[i][0] + nx * hw, cl[i][1] + ny * hw]); Rr.push([cl[i][0] - nx * hw, cl[i][1] - ny * hw]);
-      }
-      c.beginPath(); c.moveTo(L[0][0], L[0][1]);
-      for (let i = 1; i < L.length; i++) c.lineTo(L[i][0], L[i][1]);
-      for (let i = Rr.length - 1; i >= 0; i--) c.lineTo(Rr[i][0], Rr[i][1]);
-      c.closePath(); c.fillStyle = col; c.globalAlpha = a; c.fill();
-    };
+    const cl = pts;                                     // the tail starts one point behind the fish
+    ribbonRoom(cl.length); RIB.n = cl.length - 1;
+    for (let i = 1; i < cl.length; i++) { RIB.cx[i - 1] = cl[i][0]; RIB.cy[i - 1] = cl[i][1]; }
+    let tw0 = 1;
+    const tailW = (i, n) => { const f = 1 - i / n; return (11 * Math.pow(f, 1.3) + .5) * scale * tw0 * (1 + .08 * Math.sin(t * 20 + i)); };
+    const tail = (wk, col, a) => { tw0 = wk; ribbonPath(c, tailW); c.fillStyle = col; c.globalAlpha = a; c.fill(); };
     if (!GFX.lite) tail(1.9, '#5fb8ff', .22);
     tail(1, '#8fd4ff', .75); tail(.45, '#ffffff', .9);
     if (!GFX.lite) {
       c.fillStyle = '#ffffff';
-      for (let i = 3; i < cl.length; i += 3) {
-        const p = cl[i], f = 1 - i / cl.length, tw = Math.abs(Math.sin(t * 8 + i * 1.3));
+      for (let i = 3; i < cl.length - 1; i += 3) {
+        const p = cl[i + 1], f = 1 - i / (cl.length - 1), tw = Math.abs(Math.sin(t * 8 + i * 1.3));
         const ox = Math.sin(i * 2.1 + t * 3) * 12 * scale, oy = Math.cos(i * 1.7 + t * 2) * 12 * scale;
         c.globalAlpha = f * tw; const r = (1.2 + 1.6 * f) * scale;
         c.beginPath(); c.moveTo(p[0] + ox, p[1] + oy - r * 2.2); c.lineTo(p[0] + ox + r * .6, p[1] + oy); c.lineTo(p[0] + ox, p[1] + oy + r * 2.2); c.lineTo(p[0] + ox - r * .6, p[1] + oy); c.closePath(); c.fill();
@@ -2857,56 +2920,38 @@ function drawStreamer(c, pts, def, t, scale, vert = false) {
     c.restore(); return;
   }
   for (const side of [-1, 1]) {
-    c.beginPath();
+    // this side's centre line, wobbling behind the fish
+    ribbonRoom(pts.length); RIB.n = pts.length - 2;
     for (let i = 2; i < pts.length; i++) {
-      const p = pts[i], f = 1 - i / pts.length;
-      const wob = Math.sin(t * 7 - i * .5) * 7 * f;
-      const [px, py] = at(p, side * (4 + Math.min(i, 14) * .55) * scale + wob);
-      i === 2 ? c.moveTo(px, py) : c.lineTo(px, py);
+      const f = 1 - i / pts.length, d = side * (4 + Math.min(i, 14) * .55) * scale + Math.sin(t * 7 - i * .5) * 7 * f;
+      RIB.cx[i - 2] = pts[i][0] + (vert ? d : 0); RIB.cy[i - 2] = pts[i][1] + (vert ? 0 : d);
     }
     c.lineCap = 'round';
     if (def.col === 'rainbow' && !GFX.lite) {
       // one soft glow pass under the whole ribbon (a blur per segment cost ~60 shadow draws a frame)
+      c.beginPath(); c.moveTo(RIB.cx[0], RIB.cy[0]);
+      for (let i = 1; i < RIB.n; i++) c.lineTo(RIB.cx[i], RIB.cy[i]);
       const ga = c.globalAlpha;
       c.globalAlpha = ga * .28; c.strokeStyle = `hsl(${(t * 120 + 40) % 360},95%,70%)`; c.lineWidth = 13 * scale; c.stroke();
       c.globalAlpha = ga;
       // then the ribbon itself in colored segments
-      for (let i = 2; i < pts.length - 1; i++) {
-        const p = pts[i], q = pts[i + 1], f = 1 - i / pts.length, wob = Math.sin(t * 7 - i * .5) * 7 * f;
-        c.beginPath();
-        c.moveTo(...at(p, side * (4 + Math.min(i, 14) * .55) * scale + wob));
-        c.lineTo(...at(q, side * (4 + Math.min(i + 1, 14) * .55) * scale + Math.sin(t * 7 - (i + 1) * .5) * 7 * f));
-        c.strokeStyle = `hsl(${(i * 14 + t * 120) % 360},95%,62%)`; c.lineWidth = Math.max(1.5, 8 * f * scale);
+      for (let i = 0; i < RIB.n - 1; i++) {
+        const f = 1 - (i + 2) / pts.length;
+        c.beginPath(); c.moveTo(RIB.cx[i], RIB.cy[i]); c.lineTo(RIB.cx[i + 1], RIB.cy[i + 1]);
+        c.strokeStyle = `hsl(${((i + 2) * 14 + t * 120) % 360},95%,62%)`; c.lineWidth = Math.max(1.5, 8 * f * scale);
         c.stroke();
       }
       continue;
     }
     // a real ribbon: tapering to a point and twisting as it flows, so it catches the light in bands
     const col = def.col === 'rainbow' ? `hsl(${(t * 120) % 360},95%,62%)` : def.col;
-    const cl = [];
-    for (let i = 2; i < pts.length; i++) {
-      const f = 1 - i / pts.length, wob = Math.sin(t * 7 - i * .5) * 7 * f;
-      cl.push(at(pts[i], side * (4 + Math.min(i, 14) * .55) * scale + wob));
-    }
-    const edge = (wk) => {
-      const L = [], Rr = [];
-      for (let i = 0; i < cl.length; i++) {
-        const a = cl[Math.max(0, i - 1)], b = cl[Math.min(cl.length - 1, i + 1)];
-        let nx = -(b[1] - a[1]), ny = b[0] - a[0]; const d = Math.hypot(nx, ny) || 1; nx /= d; ny /= d;
-        const f = 1 - i / cl.length, twist = .45 + .55 * Math.abs(Math.cos(i * .42 - t * 7 + side));
-        const hw = (4.4 * f + .4) * scale * twist * wk;
-        L.push([cl[i][0] + nx * hw, cl[i][1] + ny * hw]); Rr.push([cl[i][0] - nx * hw, cl[i][1] - ny * hw]);
-      }
-      c.beginPath(); c.moveTo(L[0][0], L[0][1]);
-      for (let i = 1; i < L.length; i++) c.lineTo(L[i][0], L[i][1]);
-      for (let i = Rr.length - 1; i >= 0; i--) c.lineTo(Rr[i][0], Rr[i][1]);
-      c.closePath();
-    };
+    let wk = 1;
+    const ribW = (i, n) => (4.4 * (1 - i / n) + .4) * scale * (.45 + .55 * Math.abs(Math.cos(i * .42 - t * 7 + side))) * wk;
     c.fillStyle = col;
-    if (!GFX.lite) { edge(2.4); c.globalAlpha = .22; c.fill(); }          // soft neon haze
-    edge(1); c.globalAlpha = .92; c.fill();
+    if (!GFX.lite) { wk = 2.4; ribbonPath(c, ribW); c.globalAlpha = .22; c.fill(); }          // soft neon haze
+    wk = 1; ribbonPath(c, ribW); c.globalAlpha = .92; c.fill();
     c.beginPath();                                                            // bright core down the first half
-    for (let i = 0; i < cl.length * .55; i++) i ? c.lineTo(cl[i][0], cl[i][1]) : c.moveTo(cl[i][0], cl[i][1]);
+    for (let i = 0; i < RIB.n * .55; i++) i ? c.lineTo(RIB.cx[i], RIB.cy[i]) : c.moveTo(RIB.cx[i], RIB.cy[i]);
     c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = 1.6 * scale; c.globalAlpha = .6; c.stroke();
     c.globalAlpha = 1;
   }
@@ -7956,7 +8001,9 @@ function resize() {
   const wasP = PORTRAIT;
   PORTRAIT = ah > aw * 1.05;
   if (PORTRAIT) { W = PORT_W; H = clamp(Math.round(PORT_W * ah / aw), PORT_H_MIN, PORT_H_MAX); }
-  else { H = 540; W = clamp(Math.round(H * aw / ah), BASE_W, MAX_W); }
+  else if (aw / ah >= BASE_W / 540) { H = 540; W = clamp(Math.round(H * aw / ah), BASE_W, MAX_W); }
+  // a squarer screen (Fire tablets are 16:10, iPads 4:3): a little more water top to bottom instead of black bars
+  else { W = BASE_W; H = clamp(Math.round(BASE_W * ah / aw), 540, LAND_H_MAX); }
   SCALE = Math.min(aw / W, ah / H);
   document.body.classList.toggle('portrait', PORTRAIT);
   gradMemo.clear();                          // some cached gradients are laid out in screen space
@@ -8403,14 +8450,20 @@ const WALL_LOOK = [
   // atlantis: pale marble with gold trim
   { body: '#8d8676', band: '#d6cdb8', rim: '#ffe7a3', deco: 'marble' },
 ];
+const WALL_PTS = [];
 function drawWalls(c, t) {
   if (!R.vert) return;
   const look = WALL_LOOK[R.zone.tier || 0];
   // sample the wall at fixed WORLD positions, so its outline scrolls smoothly instead of
   // shimmering as the samples slide along it
-  const step = 16, pts = [];
+  const step = 16, pts = WALL_PTS;                    // the same little arrays every frame
   const w0 = Math.floor((R.cam - step) / step) * step;
-  for (let wx = w0; wx <= R.cam + H + step * 2; wx += step) { const sd = wallSides(wx); pts.push([wx - R.cam, sd[0], wx, sd[1]]); }
+  let np = 0;
+  for (let wx = w0; wx <= R.cam + H + step * 2; wx += step) {
+    const sd = wallSides(wx), q = pts[np] || (pts[np] = [0, 0, 0, 0]);
+    q[0] = wx - R.cam; q[1] = sd[0]; q[2] = wx; q[3] = sd[1]; np++;
+  }
+  pts.length = np;
   // rock pokes out and sinks back a little so the face looks natural, never far into the water
   const bump = (wx, side) => 3.5 * Math.sin(wx * .019 + side * 2.1) + 2.5 * Math.sin(wx * .051 + side) - 2;
   for (const side of [0, 1]) {
@@ -9373,10 +9426,20 @@ function zoneBanner(t, s) {
 /* =================================================================
    SCREENS
    ================================================================= */
+/* Leaving a screen lets go of its pictures. A full Sea Friends book or trophy case is dozens of little
+   canvases (30+ MB on a sharp phone screen); each screen paints its own afresh when it opens. */
+const SCR_FREE = { 'scr-book': '#bookGrid', 'scr-trophy': '#trophyGrid', 'scr-shop': '#shopGrid', 'scr-home': '#homeGrid' };
+const SCR_CANVAS = { 'scr-title': '#titleBg', 'scr-home': '#homeCv' };   // these resize themselves when shown again
+function screenFree(id) {
+  for (const s in SCR_FREE) if (s !== id) { const g = $(SCR_FREE[s]); if (g && g.firstChild) g.textContent = ''; }
+  for (const s in SCR_CANVAS) if (s !== id) { const cv = $(SCR_CANVAS[s]); if (cv && cv.width) { cv.width = 0; cv.height = 0; } }
+}
 function show(id) {
   $$('.screen').forEach(s => s.classList.toggle('on', s.id === id));
+  screenFree(id);
   document.body.classList.toggle('on-title', id === 'scr-title');
   $('#game').classList.toggle('on', id === 'game');
+  if (id === 'game') hubFrom = '';                     // a swim starts fresh: Back after it goes to the plain hub
   document.body.classList.toggle('ingame', id === 'game');
   if (id === 'game') resize();
   else if (MUS.name && !R) musicSync();              // each menu screen may have its own tune (the Home Reef does)
@@ -9537,6 +9600,7 @@ function renderHub() {
   $('#homeBadge').textContent = homeTreasureReady(p) && (p.stats.runs || 0) ? '🎁' : homeCanUpgrade(p) ? '!' : '';
   renderNextGoal(p);
   holidayHub(p);                                      // 18-holidays.js
+  hubDoorBadges(p);                                   // 17-menus.js: the three doors show what's inside
 
   show('scr-hub');
 }
@@ -9589,14 +9653,14 @@ $('#practiceGrid').addEventListener('click', e => {
   closeOv(); SFX.click();
   startGame({ practice: true, zoneIdx: +card.dataset.arena });
 });
-$('#practiceClose').onclick = () => { closeOv(); SFX.click(); };
+$('#practiceClose').onclick = () => { closeOv(); SFX.click(); hubBack(); };
 $('#rushBtn').onclick = () => {
   SFX.click();
   const p = P();
   $('#rushBestLine').textContent = p.rushBest ? `🥇 Your record: ${fmtTime(p.rushBest)}` : 'No record yet — set one!';
   openOv('rush');
 };
-$('#rushClose').onclick = () => { closeOv(); SFX.click(); };
+$('#rushClose').onclick = () => { closeOv(); SFX.click(); hubBack(); };
 $('#rushGo').onclick = () => { closeOv(); SFX.click(); startGame({ rush: true, zoneIdx: RUSH_ZONES[0] }); };
 $('#switchBtn').onclick = () => renderTitle();
 /* ----- secret codes ----- */
@@ -9625,7 +9689,7 @@ function trySecret() {
       r.got.map(g => `<div class="s-line">✨ ${esc(g)}</div>`).join(''), 'win');
     $('#secretIn').value = '';
     SFX.win2(); confetti();
-    renderHub(); openOv('secret');
+    const f = hubFrom; renderHub(); hubFrom = f; openOv('secret');
   } else if (r.status === 'used') {
     renderSecret(`<div class="s-ic">${r.code.ic}</div><div class="s-title">You already found this one!</div><div class="s-line">Keep looking — there are more out there.</div>`, 'meh');
     SFX.click();
@@ -9641,7 +9705,7 @@ function trySecret() {
 }
 $('#secretGo').onclick = trySecret;
 $('#secretIn').addEventListener('keydown', e => { if (e.key === 'Enter') trySecret(); });
-$('#secretClose').onclick = () => { closeOv(); SFX.click(); };
+$('#secretClose').onclick = () => { closeOv(); SFX.click(); hubBack(); };
 // a shower of paper confetti over the whole screen
 function confetti() {
   const box = document.createElement('div'); box.className = 'confetti';
@@ -9935,7 +9999,7 @@ $('#shopGrid').addEventListener('click', e => {
 $('#shopBtn').onclick = () => { SFX.click(); renderShop(); };
 $('#trophyBtn').onclick = () => { SFX.click(); renderTrophies(); };
 $('#bookBtn').onclick = () => { SFX.click(); renderBook(); };
-$('#bookBack').onclick = () => { SFX.click(); closePops(); renderHub(); };
+$('#bookBack').onclick = () => { SFX.click(); closePops(); renderHub(); hubBack(); };
 // paint every picture in a grid once it has been laid out (canvases need their real size first)
 function paintCards(sel) {
   requestAnimationFrame(() => {
@@ -9983,9 +10047,9 @@ for (const btn of [$('#bookRead'), $('#trophyRead')]) btn.onclick = e => {
   const card = btn.closest('.card');
   speakLine(btn.dataset.line, card.querySelector('h2').textContent.replace('🔒 ', '') + '. ' + card.querySelector('p').textContent, btn);
 };
-$('#trophyBack').onclick = () => { closePops(); renderHub(); };
+$('#trophyBack').onclick = () => { closePops(); renderHub(); hubBack(); };
 $('#dailyBtn').onclick = () => { SFX.click(); renderDaily(); };
-$('#dailyBack').onclick = () => renderHub();
+$('#dailyBack').onclick = () => { renderHub(); hubBack(); };
 $('#dailyPlay').onclick = () => { SFX.click(); startGame({ daily: true }); };
 $('#shopBack').onclick = $('#shopBackTop').onclick = () => { SFX.click(); renderHub(); };
 $('#clamOk').onclick = () => { $('#clamReveal').classList.remove('on'); SFX.click(); renderShop(); };
@@ -10228,15 +10292,35 @@ const DRG_N = 16;                                         // body segments behin
 const DRG_S = () => (PORTRAIT ? .62 : 1) * 1.1;
 const DRG_GAP = 6;                                        // the path is remembered every this many pixels
 const drgSegR = (i, S) => S * (5 + 15 * Math.pow(1 - i / DRG_N, .8));
+// how many remembered path points lie between two body segments. The path is kept evenly spaced (see
+// dragonTrack), so the dragon is the same length whether it is cruising or dashing.
+const drgStep = S => Math.max(2, Math.round(34 * S / DRG_GAP));
+const drgKeep = S => DRG_N * drgStep(S) + 4;
+// a straight body trailing off to the right of (x, y): how it waits off screen before swimming in
+function dragonLayPath(B, x, y) { B.dpath.length = 0; for (let i = 0; i < drgKeep(DRG_S()); i++) B.dpath.push({ x: x + i * DRG_GAP, y }); }
+// remember the head's path in even steps, filling in the gaps when it moves fast (a dash covers
+// two steps a frame: recording one point a frame used to stretch the body, then snap it back)
+function dragonTrack(B) {
+  let p = B.dpath[0];
+  if (!p) { B.dpath.unshift({ x: B.dx, y: B.dy }); return; }
+  let d = Math.hypot(B.dx - p.x, B.dy - p.y), n = 0;
+  while (d >= DRG_GAP && n++ < 60) {
+    const k = DRG_GAP / d;
+    p = { x: p.x + (B.dx - p.x) * k, y: p.y + (B.dy - p.y) * k };
+    B.dpath.unshift(p); d -= DRG_GAP;
+  }
+  const keep = drgKeep(DRG_S());
+  if (B.dpath.length > keep) B.dpath.length = keep;
+}
 function dragonInit(B) {
   const S = DRG_S();
   B.dx = W + 140; B.dy = H * .5; B.dang = Math.PI; B.dpath = []; B.dash = null; B.mouth = 0;
-  for (let i = 0; i < 120; i++) B.dpath.push({ x: B.dx + i * DRG_GAP, y: B.dy });
+  dragonLayPath(B, B.dx, B.dy);
   B.wr = 30 * S;
 }
 // the body, head first, as points along the path it has swum
 function dragonPoints(B) {
-  const S = DRG_S(), k = Math.max(2, Math.round(22 * S / DRG_GAP)), out = [];
+  const S = DRG_S(), k = drgStep(S), out = [];
   for (let i = 0; i <= DRG_N; i++) { const p = B.dpath[Math.min(B.dpath.length - 1, i * k)] || { x: B.dx, y: B.dy }; out.push([p.x, p.y]); }
   out[0] = [B.dx, B.dy];
   return out;
@@ -10258,23 +10342,28 @@ function dragonUpdate(B, dt) {
       steer = false;
       if (!d.roared) { d.roared = 1; SFX.bossRoar(); R.shake = Math.max(R.shake, 6); }
       B.dang = Math.PI; B.dx -= d.sp * dt; B.dy += (d.y - B.dy) * Math.min(1, dt * 10);
-      if (B.dx < -DRG_N * 24 * S - 120) {
-        // gone out of the far side: it swims back in from the right
-        B.dash = null; B.dx = W + 150; B.dy = rand(H * .3, H * .7); B.dang = Math.PI; B.dpath.length = 0;
+      const tail = B.dpath[Math.min(B.dpath.length - 1, DRG_N * drgStep(S))];
+      if (tail && tail.x < -40 * S) {
+        // its tail has left the far side: it lines up off the right-hand edge and swims back in, whole
+        B.dash = null; B.dx = W + 60 * S; B.dy = rand(H * .3, H * .7); B.dang = Math.PI;
+        dragonLayPath(B, B.dx, B.dy);
       }
     }
   } else { tx = W * .66 + Math.sin(B.t * .55) * W * .2; ty = H * .5 + Math.sin(B.t * 1.15) * H * .3; }
-  if (steer) {
+  const near = B.dash && B.dash.t < B.dash.tele && Math.hypot(tx - B.dx, ty - B.dy) < 90 * S;
+  if (steer && near) {
+    // in place at the wall: settle, nose toward Finn's side of the hall, instead of circling the spot
+    const diff = ((Math.PI - B.dang + Math.PI) % 6.2832 + 6.2832) % 6.2832 - Math.PI;
+    B.dang += clamp(diff, -4 * dt, 4 * dt);
+    B.dx += (tx - B.dx) * Math.min(1, dt * 3); B.dy += (ty - B.dy) * Math.min(1, dt * 3);
+  } else if (steer) {
     const want = Math.atan2(ty - B.dy, tx - B.dx);
     const diff = ((want - B.dang + Math.PI) % 6.2832 + 6.2832) % 6.2832 - Math.PI;
     B.dang += clamp(diff, -turn * dt, turn * dt);
     const v = Math.min(spd, Math.hypot(tx - B.dx, ty - B.dy) * 2.5 + 30);
     B.dx += Math.cos(B.dang) * v * dt; B.dy += Math.sin(B.dang) * v * dt;
   }
-  const p0 = B.dpath[0];
-  if (!p0 || Math.hypot(B.dx - p0.x, B.dy - p0.y) >= DRG_GAP) B.dpath.unshift({ x: B.dx, y: B.dy });
-  const keep = DRG_N * Math.max(2, Math.round(22 * S / DRG_GAP)) + 4;
-  if (B.dpath.length > keep) B.dpath.length = keep;
+  dragonTrack(B);
   B.mouth = Math.max(0, B.mouth - dt * 2.2);
   if (B.weakOpen) { const [px, py] = dragonPearl(B); B.wx = px; B.wy = py; }
   // touching the dragon hurts — except its head while it rests, so the pearl can be reached
@@ -10690,7 +10779,7 @@ function drawHomeScene(c, p, t, wig) {
 }
 
 /* ----- the Home screen ----- */
-const HOME = { wig: {}, last: 0, finn: [0, 0], sparks: [] };
+const HOME = { wig: {}, last: 0, finn: [0, 0], sparks: [], fx: [], parts: [] };      // fx, parts: the tap shows (30-reef.js)
 function homeTick(t) {
   const cv = $('#homeCv'); if (!cv || !cv.offsetParent) return;
   const p = P(); if (!p) return;
@@ -10701,6 +10790,7 @@ function homeTick(t) {
   for (const key in HOME.wig) { HOME.wig[key] = Math.max(0, HOME.wig[key] - dt * 1.4); }
   c.setTransform(k, 0, 0, k, 0, 0);
   drawHomeScene(c, p, t, HOME.wig);
+  reefFxTick(c, t, dt);
   // little sparkles where things were tapped
   for (const s of HOME.sparks) { s.t += dt; c.globalAlpha = Math.max(0, 1 - s.t); c.fillStyle = '#fff6c8'; pStar4(c, s.x, s.y - s.t * 40, 6 * (1 - s.t * .5)); }
   c.globalAlpha = 1;
@@ -10711,6 +10801,7 @@ function renderHome() {
   const h = homeOf(p), lv = HOME_LVLS[h.lvl], next = homeNext(p), done = questsFinished(p);
   homeAwards(p);
   renderPhotoWall(p);
+  reefCombosRender(p);
   $('#homeTitle').textContent = `${esc(p.name)}'s ${lv.name}`;
   $('#homeCoins').textContent = p.coins;
   const ready = homeTreasureReady(p);
@@ -10769,7 +10860,7 @@ function homeTap(ev) {
   for (const d of HOME_DECO.slice().reverse()) {
     if (!homeHas(p, d)) continue;
     const top = d.float ? d.y + d.h / 2 : d.y;
-    if (near(d.x, top, d.w, d.h)) { HOME.wig[d.id] = 1; (d.id === 'disco' ? SFX.mission : d.id === 'chest' ? () => SFX.coin(5) : SFX.click)(); return; }
+    if (near(d.x, top, d.w, d.h)) { reefTap(d, p); return; }        // each one puts on a show, sometimes with a partner (30-reef.js)
   }
   if (near(480, HOME_GROUND + 6, 240, 220)) { HOME.wig.house = 1; SFX.whoosh(); return; }
   SFX.click();
@@ -10855,12 +10946,12 @@ function renderNextGoal(p) {
   const g = goalNow = nextGoal(p);
   $('#nextGoal').innerHTML = `<span class="ng-ic">${g.ic}</span><span class="ng-t">${esc(g.text)}</span>${canTTS() ? '<button class="ng-say" id="ngSay" title="Read it to me">🔊</button>' : ''}`;
   $$('.nudge').forEach(b => b.classList.remove('nudge'));
-  const b = $(g.btn); if (b) b.classList.add('nudge');
+  const b = $(DOOR_OF[g.btn] || g.btn); if (b) b.classList.add('nudge');   // a button inside a menu: pulse the door to it
 }
 $('#nextGoal').addEventListener('click', e => {
   if (!goalNow) return;
   if (e.target.closest('#ngSay')) { e.stopPropagation(); speakLine('goal', goalNow.text, null); return; }
-  SFX.click();
+  SFX.click(); hubFrom = '';
   if (goalNow.go) goalNow.go(); else $(goalNow.btn).click();
 });
 
@@ -10924,7 +11015,7 @@ function renderSettings() {
   openOv('settings');
 }
 $('#settingsBtn').onclick = () => { SFX.click(); renderSettings(); };
-$('#setClose').onclick = () => { closeOv(); SFX.click(); renderHub(); };
+$('#setClose').onclick = () => { closeOv(); SFX.click(); hubFrom = ''; renderHub(); };
 $('#setHoliday').addEventListener('change', e => { SAVE.holiday = e.target.value; save(); holidayApply(); renderSettings(); musicSync(); });
 
 /* ----- the pause panel: what you're collecting and what your outfit does ----- */
@@ -10937,6 +11028,35 @@ function renderPauseInfo() {
   $('#pauseInfo').innerHTML = (R.practice || R.rush || R.daily) ? '' : rows.join('') + (pw.length ? `<div class="pw">🪄 ${pw.map(esc).join(' · ')}</div>` : '');
   setVolume('musVol', volOf('musVol'));
 }
+
+/* ----- the hub's three doors: Challenges, Goals and Collection; and the gear (Settings and more) -----
+   The hub keeps only the big three in view (Swim, Shop, My Reef). Everything else is one tap down,
+   and Back from anything opened through a door comes back to that door's menu, not the bare hub. */
+var hubFrom = '';                                       // which little menu the open screen came from
+const DOOR_OF = { '#dailyBtn': '#modesBtn', '#practiceBtn': '#modesBtn', '#rushBtn': '#modesBtn', '#trophyBtn': '#collectBtn', '#bookBtn': '#collectBtn' };
+function hubBack() {
+  const f = hubFrom; hubFrom = '';
+  if (!f || !$('#scr-hub').classList.contains('on')) return;
+  if (f === 'settings') renderSettings(); else openOv(f);
+}
+// a door inside a little menu: shut the menu first, then the door's own handler opens its screen
+for (const id of ['modes', 'collect', 'settings']) $('#ov-' + id).addEventListener('click', e => {
+  const d = e.target.closest('.door'); if (!d) return;
+  hubFrom = id; closeOv();
+}, true);
+function hubDoorBadges(p) {
+  const dq = $('#dailyBadge').textContent;
+  const mb = $('#modesBadge'); mb.textContent = dq; mb.classList.toggle('gold', $('#dailyBadge').classList.contains('gold'));
+  $('#collectBadge').textContent = $('#trophyBadge').textContent || $('#bookBadge').textContent;
+  $('#collTrophy').textContent = `${(p.ach || []).length} of ${ACHS.length} won`;
+  $('#collBook').textContent = `${(p.book || []).length} of ${BOOK.length} met`;
+  const h = HOL.on, gb = $('#goalsBadge');                // a holiday is on: its treat shows on the Goals door
+  gb.textContent = h && !(p.own.hat || []).includes(h.hat) ? h.ic : ''; gb.classList.toggle('gold', !!gb.textContent);
+}
+$('#modesBtn').onclick = () => { SFX.click(); openOv('modes'); };
+$('#goalsBtn').onclick = () => { SFX.click(); holidayHub(P()); openOv('goals'); };
+$('#collectBtn').onclick = () => { SFX.click(); openOv('collect'); };
+for (const id of ['modes', 'goals', 'collect']) $('#' + id + 'Close').onclick = () => { closeOv(); SFX.click(); hubFrom = ''; };
 /* ===== 18-holidays.js: Halloween, Thanksgiving, Christmas and Easter in the ocean ===== */
 /* Each holiday switches itself on by the calendar (Easter's date is worked out each year), or a
    grown-up can pick one in Settings. While it is on: the walls and reef are decorated, something
@@ -11190,7 +11310,7 @@ function holidayHomeDeco(c, t) {
   } else if (h.id === 'easter') {
     [[130, 0], [260, 1], [600, 2], [690, 3], [820, 4]].forEach(([x, i]) => { c.save(); c.translate(x, 480); c.rotate(Math.sin(i) * .3); c.scale(1.2, 1.2); drawHolItem(c, 'egg', 0); c.restore(); });
   } else if (h.id === 'thanksgiving') {
-    for (let i = 0; i < 10; i++) { c.save(); c.translate((i * 97 + t * 20) % 960, (i * 53 + t * 26) % 540); c.rotate(t + i); c.scale(.8, .8); drawHolItem(c, 'leaf', t + i); c.restore(); }
+    for (let i = 0; i < 10; i++) { c.save(); c.translate((i * 97 + t * 20) % W, (i * 53 + t * 26) % H); c.rotate(t + i); c.scale(.8, .8); drawHolItem(c, 'leaf', t + i); c.restore(); }
     c.save(); c.translate(220, 486); c.scale(1.2, 1.2); c.fillStyle = '#ff8a2a'; c.beginPath(); c.ellipse(0, -8, 13, 10, 0, 0, 7); c.fill(); c.restore();
   }
 }
@@ -12866,7 +12986,7 @@ function drawPumpkin(c, x, y, s, t) {
    Buying always goes through the grown-up check (hold for 3 seconds, then a times-table question), then
    a plain "this is real money" card, then Google Play's own sheet (and Family Link, if the family uses it). */
 
-const FD_VERSION = 'v5.1';
+const FD_VERSION = 'v5.3';
 const PLAY = typeof window !== 'undefined' && !!window.FinnPlay;      // the Google Play app (MainActivity.java)
 const TIP = { store: PLAY ? 'connecting' : 'none', price: null, product: false, pending: false, age: 'unknown', ageAsked: false, confirm: false };
 const NAR_CHARGE_T = 5;
@@ -13151,8 +13271,8 @@ $('#gateHold').addEventListener('pointerdown', gateHoldStart);
 ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => $('#gateHold').addEventListener(ev, gateHoldStop));
 $('#gateGo').onclick = gateTry;
 $('#gateIn').addEventListener('keydown', e => { if (e.key === 'Enter') gateTry(); });
-$('#gateClose').onclick = () => { gateHoldStop(); closeOv(); SFX.click(); };
-$('#parentsClose').onclick = () => { TIP.confirm = false; closeOv(); SFX.click(); renderHub(); };
+$('#gateClose').onclick = () => { gateHoldStop(); closeOv(); SFX.click(); hubBack(); };
+$('#parentsClose').onclick = () => { TIP.confirm = false; closeOv(); SFX.click(); renderHub(); hubBack(); };
 $('#thanksOk').onclick = () => { closeOv(); SFX.click(); renderHub(); };
 $('#narBtn').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); narCharge(); });
 $('#exitNo').onclick = () => { closeOv(); SFX.click(); };
@@ -13168,7 +13288,7 @@ function supportShopCard() {
 }
 
 /* ----- the Android app: Back, sound focus, and the camera hole ----- */
-const OV_BACK = { practice: 'practiceClose', warp: 'warpClose', rush: 'rushClose', myfish: 'mfoClose', settings: 'setClose', secret: 'secretClose',
+const OV_BACK = { modes: 'modesClose', goals: 'goalsClose', collect: 'collectClose', practice: 'practiceClose', warp: 'warpClose', rush: 'rushClose', myfish: 'mfoClose', settings: 'setClose', secret: 'secretClose',
   parents: 'parentsClose', gate: 'gateClose', exit: 'exitNo', pause: 'pResume', over: 'goHub', dailydone: 'ddHub', rushdone: 'rdHub', thanks: 'thanksOk' };
 const SCR_BACK = { 'scr-trophy': 'trophyBack', 'scr-book': 'bookBack', 'scr-daily': 'dailyBack', 'scr-shop': 'shopBack', 'scr-home': 'homeBack', 'scr-new': 'newBack' };
 window.finnBack = function () {
@@ -13633,6 +13753,248 @@ function drawCurrents(c, t) {
       }
     }
   }
+}
+/* ===== 30-reef.js: Playing with the Home Reef — what each decoration does when tapped, and the combos =====
+   Every decoration has a little show of its own: the chest bursts with coins, the fountain shoots a
+   geyser, the disco shell throws a party. Some pairs do something together that neither does alone
+   (the Disco Shell and the Jelly Lanterns make a Jelly Disco). When a tapped decoration has a partner
+   in the reef, a combo usually goes off, picked at random when there are several; the first time
+   each combo happens it is "found" and kept in the player's reef (homeOf(p).combos).
+   Everything here is drawn in the reef's own 960x540 picture, on top of drawHomeScene. */
+
+// where a decoration sits: its middle, and its top
+const decoMid = d => d.float ? [d.x, d.y] : [d.x, d.y - d.h / 2];
+const decoTop = d => d.float ? [d.x, d.y - d.h / 2] : [d.x, d.y - d.h];
+const decoOf = id => HOME_DECO.find(d => d.id === id);
+
+/* ----- the pieces the shows are made of ----- */
+// particles: coins, bubbles, petals, pearls, stars, notes, fish, emoji
+function reefPart(o) { if (HOME.parts.length < 160) HOME.parts.push(Object.assign({ vx: 0, vy: 0, g: 0, life: 1.5, age: 0, r: 6, spin: 0 }, o)); }
+function reefParts(c, dt, t) {
+  for (const p of HOME.parts) {
+    p.age += dt; p.vy += p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+    if (p.floor && p.y > p.floor) { p.y = p.floor; p.vy *= -.35; p.vx *= .7; }
+    if (p.k === 'petal' || p.k === 'bubble') p.x += Math.sin(t * 3 + p.ph) * 18 * dt;
+  }
+  HOME.parts = HOME.parts.filter(p => p.age < p.life);
+  for (const p of HOME.parts) {
+    const fade = Math.min(1, (p.life - p.age) * 3, p.age * 8);
+    c.save(); c.globalAlpha = fade; c.translate(p.x, p.y);
+    if (p.k === 'coin') drawCoin(c, 0, 0, t + p.ph, false, 0);
+    else if (p.k === 'bubble') { c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 2; c.beginPath(); c.arc(0, 0, p.r, 0, 7); c.stroke(); c.fillStyle = 'rgba(255,255,255,.7)'; c.beginPath(); c.arc(-p.r * .35, -p.r * .35, p.r * .25, 0, 7); c.fill(); }
+    else if (p.k === 'petal') { c.rotate(t * 2 + p.ph); c.fillStyle = p.col; c.beginPath(); c.ellipse(0, 0, p.r, p.r * .45, 0, 0, 7); c.fill(); }
+    else if (p.k === 'pearl') pearlDot(c, p.r);
+    else if (p.k === 'star') { c.fillStyle = p.col || '#fff6c8'; pStar4(c, 0, 0, p.r * (.7 + .3 * Math.sin(t * 9 + p.ph))); }
+    else if (p.k === 'fish') { c.scale(p.vx < 0 ? -1 : 1, 1); reefFish(c, p.col, t + p.ph); }
+    else if (p.k === 'emoji') { const s = p.r * 2; c.drawImage(emojiSprite(p.ch, 32), -s / 2, -s / 2, s, s); }
+    c.restore();
+  }
+}
+function pearlDot(c, r) {
+  const g = c.createRadialGradient(-r * .35, -r * .35, 1, 0, 0, r); g.addColorStop(0, '#ffffff'); g.addColorStop(.6, '#eef6ff'); g.addColorStop(1, '#b9cfe8');
+  c.fillStyle = g; c.beginPath(); c.arc(0, 0, r, 0, 7); c.fill();
+}
+// a little reef fish, nose to the right
+function reefFish(c, col, t) {
+  c.fillStyle = col;
+  c.beginPath(); c.ellipse(0, 0, 9, 6, 0, 0, 7); c.fill();
+  const w = Math.sin(t * 18) * 2.5;
+  c.beginPath(); c.moveTo(-7, 0); c.lineTo(-14, -5 + w); c.lineTo(-14, 5 + w); c.closePath(); c.fill();
+  c.fillStyle = '#fff'; c.beginPath(); c.arc(4, -1.5, 2.4, 0, 7); c.fill(); c.fillStyle = '#10213a'; c.beginPath(); c.arc(4.6, -1.5, 1.2, 0, 7); c.fill();
+}
+// a coloured beam of light from (x, y), swinging
+function beam(c, x, y, ang, len, col, a) {
+  c.save(); c.translate(x, y); c.rotate(ang); c.globalAlpha = a; c.globalCompositeOperation = 'lighter';
+  const g = c.createLinearGradient(0, 0, len, 0); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)');
+  c.fillStyle = g; c.beginPath(); c.moveTo(0, 0); c.lineTo(len, -len * .12); c.lineTo(len, len * .12); c.closePath(); c.fill(); c.restore();
+}
+function rainbowArc(c, x0, x1, base, hgt, k) {
+  const cx = (x0 + x1) / 2, rx = Math.abs(x1 - x0) / 2, cols = ['#ff5a5a', '#ffa13d', '#ffe066', '#7cff9b', '#5ec8ff', '#a77bff'];
+  c.save(); c.globalAlpha = .55 * Math.min(1, k * 4, (1 - k) * 4); c.lineCap = 'round';
+  cols.forEach((col, i) => { c.strokeStyle = col; c.lineWidth = 9; c.beginPath(); c.ellipse(cx, base, rx - i * 9, hgt - i * 9, 0, Math.PI, Math.PI + Math.PI * Math.min(1, k * 2.5)); c.stroke(); });
+  c.restore();
+}
+// words floating over the reef, in a speech bubble or as a scroll
+function reefSay(c, x, y, text, a, scroll) {
+  c.save(); c.globalAlpha = a; c.font = '700 22px Fredoka, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  const lines = text.split('\n'), w = Math.max(...lines.map(l => c.measureText(l).width)) + 34, h = lines.length * 28 + 18;
+  const bx = clamp(x, w / 2 + 8, HOME_W - w / 2 - 8);
+  c.fillStyle = scroll ? '#f6e7c4' : 'rgba(255,255,255,.96)';
+  roundRect(c, bx - w / 2, y - h, w, h, scroll ? 8 : 16); c.fill();
+  if (scroll) { c.strokeStyle = '#b08a4a'; c.lineWidth = 3; c.stroke(); c.fillStyle = '#c9a565'; for (const yy of [y - h, y]) { roundRect(c, bx - w / 2 - 8, yy - 6, w + 16, 12, 6); c.fill(); } }
+  else { c.beginPath(); c.moveTo(x - 9, y - 1); c.lineTo(x, y + 12); c.lineTo(x + 9, y - 1); c.closePath(); c.fill(); }
+  c.fillStyle = scroll ? '#5a3a10' : '#0b3a66';
+  lines.forEach((l, i) => c.fillText(l, bx, y - h + 23 + i * 28));
+  c.restore();
+}
+const tune = (notes, step = .09, wave = 'triangle', vol = .07) => notes.forEach((f, i) => tone(f, step * 1.4, wave, vol, i * step));
+
+/* ----- each decoration on its own ----- */
+const SEA_FACTS = ['Octopuses have\nthree hearts!', 'Starfish have\nno brains!', 'Seahorse dads\ncarry the babies.', 'Sea otters hold hands\nwhen they sleep.',
+  'Dolphins sleep with\none eye open!', 'All clownfish start\nlife as boys.', 'Some sharks glow\nin the dark!', 'A group of jellyfish\nis called a smack.'];
+const REEF_SOLO = {
+  chest(d) { const [x, y] = decoTop(d); for (let i = 0; i < 14; i++) reefPart({ k: 'coin', x, y, vx: rand(-160, 160), vy: rand(-420, -250), g: 900, floor: HOME_GROUND + 26, life: 2.2, ph: rand(0, 6) }); SFX.coin(10); tune([1046, 1318, 1568], .07, 'square', .04); },
+  family(d) { reefShow('babyloop', 2.6, { d }); tune([523, 659, 784, 659, 523], .1); },
+  guard(d) { reefShow('salute', 1.8, { d }); tune([392, 523, 659, 784], .13, 'square', .05); },
+  bottles(d) { reefShow('message', 3.4, { d, text: SEA_FACTS[rnd(SEA_FACTS.length)] }); SFX.pop(); },
+  well(d) { reefShow('wish', 2.2, { d }); tune([784, 988, 1175, 1568], .08, 'sine', .06); },
+  hermy(d) { reefShow('hermy', 2.4, { d, text: ['Hi there!', 'Got any shells?', 'Snip snap!', 'Cosy shell!'][rnd(4)] }); tone(1300, .06, 'square', .04); tone(1500, .06, 'square', .04, .1); },
+  shelf(d) { reefShow('trophies', 2, { d }); SFX.mission(); },
+  garden(d) { const [x, y] = decoTop(d); for (let i = 0; i < 16; i++) reefPart({ k: 'petal', x: x + rand(-50, 50), y: y + rand(0, 30), vy: rand(-90, -40), life: 2.4, ph: rand(0, 6), r: rand(4, 7), col: ['#ff7aa8', '#ffb347', '#c57bff', '#5ee8c0'][i % 4] }); tune([659, 784, 880], .1, 'sine'); },
+  kelpswing(d) { HOME.wig.kelpswing = 1.6; reefShow('say', 1.4, { x: d.x + 20, y: 250, text: 'Wheee!' }); SFX.whoosh(); },
+  arch(d) { reefShow('school', 2.2, { d }); tone(600, .4, 'sine', .04, 0, 1200); },
+  fountain(d) { const [x, y] = decoTop(d); for (let i = 0; i < 26; i++) reefPart({ k: 'bubble', x: x + rand(-8, 8), y, vx: rand(-30, 30), vy: rand(-520, -300), g: 250, life: rand(1.2, 1.9), ph: rand(0, 6), r: rand(4, 10) }); tone(300, .5, 'sine', .06, 0, 900); },
+  lanterns() { reefShow('glowwave', 2.2, {}); tune([523, 659, 784, 1046, 784, 659], .12, 'sine'); },
+  pearls(d) { reefShow('pearlhop', 1.6, { d }); tone(1200, .15, 'sine', .06); tone(1500, .2, 'sine', .05, .55); },
+  disco() { reefShow('disco', 3.2, {}); reefBeat(3.2); },
+  ship(d) { reefShow('cannon', 1.8, { d }); tone(90, .35, 'sawtooth', .07, 0, 40); tone(160, .2, 'square', .04, .05); },
+  statue(d) { reefShow('shine', 1.6, { d }); tune([784, 988, 1175, 1568], .07, 'triangle', .06); },
+  narfountain(d) { const [x] = decoTop(d); for (let i = 0; i < 18; i++) reefPart({ k: 'star', x: x + 28, y: d.y - 92, vx: rand(20, 140), vy: rand(-260, -120), g: 300, life: 1.6, ph: rand(0, 6), r: rand(4, 7), col: `hsl(${i * 40},95%,75%)` }); tune([659, 880, 1046], .1, 'sine'); },
+};
+function reefBeat(secs) { const n = Math.floor(secs / .25); for (let i = 0; i < n; i++) { if (i % 2 === 0) tone(80, .12, 'sine', .08, i * .25, 50); else tone(2000, .03, 'square', .015, i * .25); } }
+
+/* ----- the combos: two decorations that do something together ----- */
+const REEF_COMBOS = [
+  { id: 'jellydisco', a: 'disco', b: 'lanterns', name: 'Jelly Disco', run() { reefShow('disco', 3.6, {}); reefShow('glowwave', 3.6, { party: 1 }); reefShow('notes', 3.6, {}); reefBeat(3.6); } },
+  { id: 'rainbow', a: 'fountain', b: 'arch', name: 'Bubble Rainbow', run() { reefShow('rainbow', 3.2, { x0: decoOf('fountain').x, x1: decoOf('arch').x }); REEF_SOLO.fountain(decoOf('fountain')); tune([523, 659, 784, 1046, 1318], .12, 'sine'); } },
+  { id: 'cannongold', a: 'ship', b: 'chest', name: 'Cannon of Gold', run() {
+    const s = decoOf('ship'), ch = decoOf('chest'); reefShow('cannon', 1.6, { d: s });
+    for (let i = 0; i < 12; i++) { const tt = .9 + i * .03, dx = ch.x - (s.x - 50), dy = (ch.y - 40) - (s.y - 70); reefPart({ k: 'coin', x: s.x - 50, y: s.y - 70, vx: dx / tt + rand(-20, 20), vy: (dy - .5 * 700 * tt * tt) / tt, g: 700, life: tt + .1, ph: i }); }
+    setTimeout(() => { HOME.wig.chest = 1; SFX.coin(14); }, 950); tone(90, .35, 'sawtooth', .07, 0, 40); } },
+  { id: 'wishstar', a: 'well', b: 'statue', name: 'Wishing Stars', run() { reefShow('starshower', 3, {}); reefShow('shine', 2.4, { d: decoOf('statue') }); tune([1046, 1318, 1568, 2093], .11, 'sine', .06); } },
+  { id: 'swing', a: 'kelpswing', b: 'family', name: 'Swing Time', run() { HOME.wig.kelpswing = 1.6; reefShow('babyswing', 3, {}); reefShow('say', 1.6, { x: decoOf('kelpswing').x + 30, y: 230, text: 'Wheee!' }); tune([523, 659, 784, 659], .15); } },
+  { id: 'salute', a: 'guard', b: 'shelf', name: 'Royal Salute', run() { reefShow('salute', 2.4, { d: decoOf('guard') }); reefShow('trophies', 2.4, { d: decoOf('shelf'), high: 1 }); if (!musicFanfare()) SFX.win2(); } },
+  { id: 'pearlbloom', a: 'garden', b: 'pearls', name: 'Pearl Blossoms', run() { const g = decoOf('garden'); for (let i = 0; i < 10; i++) reefPart({ k: 'pearl', x: g.x + rand(-50, 50), y: g.y - 30, vy: rand(-110, -60), life: 2.6, ph: rand(0, 6), r: rand(5, 8) }); REEF_SOLO.garden(g); REEF_SOLO.pearls(decoOf('pearls')); } },
+  { id: 'hermymail', a: 'hermy', b: 'bottles', name: 'Mail for Hermy', run() { reefShow('hermy', 3.2, { d: decoOf('hermy'), text: 'A letter for me?' }); reefShow('message', 3.2, { d: decoOf('bottles'), text: 'Dear Hermy,\nthanks for the shells!' }); SFX.pop(); } },
+  { id: 'groove', a: 'disco', b: 'statue', name: 'Golden Groove', run() { reefShow('disco', 3, {}); reefShow('shine', 3, { d: decoOf('statue') }); HOME.wig.finn = 1.2; reefShow('say', 2, { x: HOME.finn[0], y: HOME.finn[1] - 40, text: 'Dance time!' }); reefBeat(3); } },
+];
+const REEF_COMBO_CHANCE = .7;          // with a partner in the reef, a tap sets off a combo most of the time
+function reefTap(d, p) {
+  HOME.wig[d.id] = 1;
+  const combos = REEF_COMBOS.filter(cb => (cb.a === d.id || cb.b === d.id) && homeHas(p, decoOf(cb.a)) && homeHas(p, decoOf(cb.b)));
+  if (combos.length && Math.random() < REEF_COMBO_CHANCE) {
+    const cb = combos[rnd(combos.length)], h = homeOf(p);
+    h.combos = Array.isArray(h.combos) ? h.combos : [];
+    const fresh = !h.combos.includes(cb.id);
+    if (fresh) { h.combos.push(cb.id); save(); reefCombosRender(p); }
+    cb.run();
+    reefShow('banner', 2.6, { text: `✨ ${cb.name}!` + (fresh ? `  New combo: ${h.combos.length} of ${REEF_COMBOS.length}` : ''), fresh });
+    return;
+  }
+  (REEF_SOLO[d.id] || (() => SFX.click()))(d);
+}
+// the combos list under the reef: found ones by name, the rest as a hint of what goes with what
+function reefCombosRender(p) {
+  const el = $('#homeCombos'); if (!el) return;
+  const h = homeOf(p), got = Array.isArray(h.combos) ? h.combos : [];
+  el.innerHTML = `<b>✨ Reef combos: ${got.length} of ${REEF_COMBOS.length}</b> ` + REEF_COMBOS.map(cb => got.includes(cb.id)
+    ? `<span class="rc got">${esc(cb.name)}</span>` : `<span class="rc">?</span>`).join('') +
+    (got.length < REEF_COMBOS.length ? '<span class="small-note"> Some things do something special together. Tap and find out!</span>' : '');
+}
+
+/* ----- the shows, drawn over the reef ----- */
+function reefShow(k, dur, o) { HOME.fx.push(Object.assign({ k, dur, t: 0 }, o)); }
+const REEF_DRAW = {
+  banner(c, e, k) {
+    const a = Math.min(1, k * 8, (1 - k) * 5);
+    c.save(); c.globalAlpha = a; c.font = '700 30px Fredoka, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    const w = c.measureText(e.text).width + 40, y = 48 - (1 - Math.min(1, k * 6)) * 20;
+    c.fillStyle = e.fresh ? 'rgba(255,224,102,.95)' : 'rgba(6,36,71,.85)'; roundRect(c, HOME_W / 2 - w / 2, y - 24, w, 48, 24); c.fill();
+    c.fillStyle = e.fresh ? '#5a3a00' : '#ffe066'; c.fillText(e.text, HOME_W / 2, y + 1); c.restore();
+  },
+  say(c, e, k) { reefSay(c, e.x, e.y, e.text, Math.min(1, k * 8, (1 - k) * 5)); },
+  babyloop(c, e, k, t) {
+    const [cx, cy] = decoMid(e.d), a0 = Math.min(1, k * 6, (1 - k) * 6);
+    for (let i = 0; i < 7; i++) {
+      const a = t * 3 + i / 7 * Math.PI * 2, x = cx + Math.cos(a) * 95, y = cy + Math.sin(a) * 40;
+      c.save(); c.globalAlpha = a0; c.translate(x, y); c.scale(-Math.sin(a) >= 0 ? 1.4 : -1.4, 1.4); reefFish(c, `hsl(${i * 51},85%,62%)`, t + i); c.restore();
+    }
+  },
+  babyswing(c, e, k, t) {
+    const f = decoMid(decoOf('family')), s = decoOf('kelpswing'), sx = s.x + 10, sy = 395;
+    for (let i = 0; i < 7; i++) {
+      const q = clamp(k * 2.2 - i * .16, 0, 1), arc = Math.sin(q * Math.PI);
+      const x = q < 1 ? lerp(f[0], sx, q) : sx + Math.sin(t * 5 + i) * 30, y = q < 1 ? lerp(f[1], sy, q) - arc * 110 : sy - 10 + Math.cos(t * 5 + i) * 8;
+      c.save(); c.globalAlpha = Math.min(1, (1 - k) * 6); c.translate(x, y); c.scale(-1.4, 1.4); reefFish(c, `hsl(${i * 51},85%,62%)`, t + i); c.restore();
+    }
+  },
+  salute(c, e, k, t) {
+    const [x, y] = decoTop(e.d);
+    for (let i = 0; i < 3; i++) { const q = (k * 2 + i / 3) % 1; c.save(); c.globalAlpha = (1 - q) * Math.min(1, (1 - k) * 4); c.drawImage(emojiSprite(i % 2 ? '🎶' : '🎵', 32), x - 40 + i * 30 + Math.sin(q * 6) * 8, y - 30 - q * 110, 38, 38); c.restore(); }
+    glowAt(c, x + 22, y + 6, 40, 40, '#ffe066', .7 * Math.sin(k * Math.PI));
+    c.fillStyle = '#fffbe6'; pStar4(c, x + 22, y + 4, 10 * Math.sin(k * Math.PI));
+  },
+  message(c, e, k) {
+    const [x, y] = decoTop(e.d), rise = Math.min(1, k * 5);
+    reefSay(c, x, y - 10 - rise * 30, e.text, Math.min(1, k * 8, (1 - k) * 5), true);
+  },
+  wish(c, e, k, t) {
+    const [x, y] = decoTop(e.d);
+    if (k < .35) { const q = k / .35, cx = lerp(x - 120, x, q), cy = lerp(y - 140, y + 10, q) - Math.sin(q * Math.PI) * 60; c.save(); c.translate(cx, cy); c.scale(.8, .8); drawCoin(c, 0, 0, t, false, 0); c.restore(); }
+    else { const q = (k - .35) / .65; glowAt(c, x, y - q * 280, 80, 80, '#fff3a0', .9 * (1 - q * .6)); for (let i = 0; i < 6; i++) { c.fillStyle = i ? '#fff6c8' : '#ffffff'; pStar4(c, x + Math.sin(i * 2.4 + q * 4) * 34 * q, y - q * 280 + i * 22, 16 - i * 2); } }
+  },
+  hermy(c, e, k, t) {
+    const [x] = decoTop(e.d), up = Math.sin(Math.min(1, k * 1.15) * Math.PI) , y = e.d.y - 20 - up * 40;
+    c.save(); c.translate(x + 20, y); c.rotate(Math.sin(t * 10) * .12); c.drawImage(emojiSprite('🦀', 32), -24, -24, 48, 48); c.restore();
+    if (up > .6) reefSay(c, x + 20, y - 30, e.text, Math.min(1, (up - .6) * 5));
+  },
+  trophies(c, e, k, t) {
+    const icons = { meg: '🦈', kraken: '🐙', lantern: '🏮', crab: '🦀', ufo: '🛸', bigfoot: '👣', king: '🔱', dragon: '🐉' };
+    const p = P(), got = ((p && p.bossKinds) || []).filter(b => icons[b]); if (!got.length) got.push('meg');
+    const [x, y] = decoTop(e.d);
+    got.forEach((b, i) => { const q = clamp(k * 1.6 - i * .1, 0, 1), hop = Math.sin(q * Math.PI) * (e.high ? 150 : 60);
+      c.drawImage(emojiSprite(icons[b], 32), x - got.length * 21 + i * 42, y - 20 - hop, 40, 40); if (q > .3 && q < .7) { c.fillStyle = '#fffbe6'; pStar4(c, x - got.length * 21 + i * 42 + 20, y - 26 - hop, 9); } });
+  },
+  school(c, e, k, t) {
+    const [ax] = decoMid(e.d), y0 = e.d.y - 55;
+    for (let i = 0; i < 9; i++) { const x = lerp(ax - 300, ax + 300, clamp(k * 1.3 - i * .035, 0, 1)), y = y0 + ((i % 3) - 1) * 16 + Math.sin(t * 6 + i) * 4;
+      c.save(); c.globalAlpha = Math.min(1, (1 - k) * 6); c.translate(x - (i % 3) * 18, y); c.scale(1.6, 1.6); reefFish(c, ['#ffd23f', '#5ec8ff', '#ff7aa8'][i % 3], t + i); c.restore(); }
+  },
+  glowwave(c, e, k, t) {
+    const L = decoOf('lanterns');
+    for (let i = 0; i < 3; i++) {
+      const x = L.x + (i - 1) * 200, q = e.party ? .5 + .5 * Math.sin(t * 8 + i * 2) : Math.max(0, Math.sin((k * 3 - i * .45) * Math.PI));
+      const col = e.party ? `hsl(${(t * 220 + i * 120) % 360},95%,65%)` : ['#ff7ad9', '#7af0ff', '#ffe066'][i];
+      glowAt(c, x, L.y, 105, 105, col, q * Math.min(1, (1 - k) * 5));
+      if (q > .5) { c.fillStyle = '#fffbe6'; pStar4(c, x + Math.sin(t * 4 + i) * 40, L.y - 30 + Math.cos(t * 3 + i) * 20, 8 * q); }
+    }
+  },
+  pearlhop(c, e, k) {
+    const [x, y] = decoTop(e.d), q = Math.min(1, k * 1.25), hop = Math.abs(Math.sin(q * Math.PI * 2)) * (1 - q * .5) * 70;
+    glowAt(c, x + Math.sin(q * Math.PI) * 50, y - 6 - hop, 30, 30, '#ffffff', .6); c.save(); c.translate(x + Math.sin(q * Math.PI) * 50, y - 6 - hop); pearlDot(c, 12); c.restore();
+  },
+  disco(c, e, k, t) {
+    const D = decoOf('disco'), a = Math.min(1, k * 6, (1 - k) * 4);
+    for (let i = 0; i < 6; i++) beam(c, D.x, D.y + 40, Math.PI / 2 + Math.sin(t * 2.2 + i * 1.05) * 1.1, 520, `hsl(${(i * 60 + t * 120) % 360},100%,60%)`, .3 * a);
+    for (let i = 0; i < 14; i++) { const ang = t * 1.5 + i * .45, r = 140 + (i % 4) * 70; c.fillStyle = `hsla(${i * 26},100%,80%,${.7 * a})`; pStar4(c, D.x + Math.cos(ang) * r * 1.6, 300 + Math.sin(ang) * r * .5, 4 + (i % 3) * 2); }
+  },
+  notes(c, e, k, t) {
+    for (let i = 0; i < 6; i++) { const q = (k * 2.5 + i / 6) % 1; c.save(); c.globalAlpha = (1 - q) * Math.min(1, (1 - k) * 5); c.drawImage(emojiSprite(i % 2 ? '🎶' : '🎵', 32), 140 + i * 130 + Math.sin(t * 3 + i) * 20, 380 - q * 200, 30, 30); c.restore(); }
+  },
+  cannon(c, e, k, t) {
+    const x = e.d.x - 60, y = e.d.y - 70;
+    if (k < .35) { const q = k / .35; c.fillStyle = `rgba(230,236,245,${.8 * (1 - q)})`; for (let i = 0; i < 5; i++) { c.beginPath(); c.arc(x - q * 30 - i * 12, y - i * 6 * q, 10 + q * 18 - i * 2, 0, 7); c.fill(); } }
+    if (k < .7) reefSay(c, x - 20, y - 40, 'BOOM!', Math.min(1, (.7 - k) * 6));
+  },
+  shine(c, e, k) {
+    const d = e.d, [x, y] = decoMid(d), sweep = (k * 1.4) % 1;
+    glowAt(c, x, y, d.w * 1.2, d.h * .8, '#ffe9a0', .7 * Math.sin(k * Math.PI));
+    c.save(); c.globalAlpha = .7 * Math.sin(k * Math.PI); c.strokeStyle = '#fffbe6'; c.lineWidth = 8; c.beginPath(); c.moveTo(x - d.w / 2 + sweep * d.w, y - d.h / 2); c.lineTo(x - d.w / 2 + sweep * d.w - 20, y + d.h / 2); c.stroke(); c.restore();
+    c.fillStyle = '#fffbe6'; for (let i = 0; i < 4; i++) pStar4(c, x + Math.cos(i * 1.7 + k * 5) * d.w * .5, y + Math.sin(i * 2.3 + k * 4) * d.h * .45, 7 * Math.sin(k * Math.PI));
+  },
+  rainbow(c, e, k) { const x0 = Math.min(e.x0, e.x1), x1 = Math.max(e.x0, e.x1); rainbowArc(c, x0, x1, 440, 230, k); },
+  starshower(c, e, k, t) {
+    for (let i = 0; i < 7; i++) { const q = clamp(k * 1.6 - i * .09, 0, 1); if (q <= 0 || q >= 1) continue;
+      const x = 900 - q * 700 + i * 30, y = 40 + q * 220 + (i % 3) * 30;
+      c.save(); c.globalAlpha = 1 - q; c.strokeStyle = 'rgba(255,246,200,.6)'; c.lineWidth = 3; c.beginPath(); c.moveTo(x, y); c.lineTo(x + 60, y - 22); c.stroke(); c.restore();
+      c.fillStyle = '#fff6c8'; pStar4(c, x, y, 9); }
+  },
+};
+// homeTick calls this after painting the reef
+function reefFxTick(c, t, dt) {
+  for (const e of HOME.fx) { e.t += dt; const k = Math.min(1, e.t / e.dur); const f = REEF_DRAW[e.k]; if (f) { c.save(); f(c, e, k, t); c.restore(); } }
+  HOME.fx = HOME.fx.filter(e => e.t < e.dur);
+  reefParts(c, dt, t);
 }
 
 /* =================================================================
