@@ -13,7 +13,7 @@ android {
         // Every cloud build gets a higher version code than the last, so a new build
         // always installs over the old one (and Play accepts it) without touching this file.
         versionCode 100 + (System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInteger()
-        versionName "5.1"
+        versionName "5.3"
     }
 
     signingConfigs {
